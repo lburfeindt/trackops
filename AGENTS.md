@@ -5,7 +5,7 @@
 - Create a Git branch for each task
 - Keep changes focused and follow the conventions and lifecycle documented by the affected tool.
 - This repository contains independent tools. Check the tool's README before changing it; avoid assuming one language or workflow applies to every tool.
-- From the repository root, `make test`, `make check`, and `make build` run the registered tools' corresponding targets. Tool-specific instructions may define additional requirements.
+- From the repository root, `make format`, `make lint`, `make test`, `make verify`, and `make build` run the registered tools' corresponding targets. Tool-specific instructions may define additional requirements.
 - Keep commit messages and pull request descriptions short (one to three lines).
 
 ## Agent workflow

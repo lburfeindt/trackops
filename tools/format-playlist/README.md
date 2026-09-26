@@ -18,4 +18,4 @@ make build
 ./tools/format-playlist/bin/format-playlist path/to/playlist.m3u8
 ```
 
-This tool requires Go 1.24 or later. Its local targets are `make -C tools/format-playlist test`, `check`, and `build`. The root [project README](../../README.md) describes the language-neutral lifecycle commands. The command prints one title per `#EXTINF` entry, preserving commas and Unicode in titles.
+This tool requires Go 1.27.1 or later. Its local targets are `format`, `lint`, `test`, `verify`, and `build`, run as `make -C tools/format-playlist <target>`. The root [project README](../../README.md) describes the language-neutral lifecycle commands. The command prints one title per `#EXTINF` entry, preserving commas and Unicode in titles.

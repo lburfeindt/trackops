@@ -1,13 +1,21 @@
-.PHONY: test check build
+.PHONY: test verify format lint build
+
+GO_FILES := $(shell find . -name '*.go' -not -path './.git/*')
+
+format:
+	gofmt -w $(GO_FILES)
+
+lint:
+	go vet ./...
 
 test:
 	go test ./...
 
-check:
-	@unformatted="$$(gofmt -l $$(find . -name '*.go' -not -path './.git/*'))"; \
+verify:
+	@unformatted="$$(gofmt -l $(GO_FILES))"; \
 	if [ -n "$$unformatted" ]; then printf '%s\n' "$$unformatted"; exit 1; fi
-	go vet ./...
-	go test ./...
+	$(MAKE) lint
+	$(MAKE) test
 
 build:
 	mkdir -p bin

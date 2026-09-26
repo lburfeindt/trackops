@@ -4,13 +4,15 @@ A small collection of independent command-line tools for music tasks. Each tool 
 
 ## Development
 
-Requires Make and the language runtimes listed in each tool's README. The current Go tool requires Go 1.24 or later.
+Requires Make and the language runtimes listed in each tool's README. The current Go tool requires Go 1.27.1 or later.
 
 Run the registered tools' lifecycle from the repository root:
 
 ```sh
+make format
+make lint
 make test
-make check
+make verify
 make build
 ```
 
