@@ -6,9 +6,9 @@ Create a small home for standalone command-line utilities related to music. The 
 
 ## Design
 
-Each tool lives in its own directory under `tools/`. A tool directory contains its executable and a README with its purpose, usage, and requirements. This keeps tools independently understandable and leaves room for a tool to grow without imposing a common runtime or framework.
+Each tool lives in its own directory under `../../../tools`. A tool directory contains its executable and a README with its purpose, usage, and requirements. This keeps tools independently understandable and leaves room for a tool to grow without imposing a common runtime or framework.
 
-The repository root contains a README that introduces the project and indexes the tools, plus lightweight project metadata files such as `.gitignore` and `.editorconfig`. A `LICENSE` file is deferred until the owner selects a license. The project does not add a package manifest, build system, or monorepo manager at this stage.
+The repository root contains a README that introduces the project and indexes the tools, plus lightweight project metadata files such as `../../../.gitignore` and `.editorconfig`. A `LICENSE` file is deferred until the owner selects a license. The project does not add a package manifest, build system, or monorepo manager at this stage.
 
 ## Initial structure
 
@@ -22,7 +22,7 @@ tools/
     format-playlist
 ```
 
-The existing script remains an executable Bash CLI and is moved to `tools/format-playlist/format-playlist` as part of implementation. Future tools get their own directories under `tools/`.
+The existing script remains an executable Bash CLI and is moved to `tools/format-playlist/format-playlist` as part of implementation. Future tools get their own directories under `../../../tools`.
 
 ## Scope and acceptance
 

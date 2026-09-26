@@ -1,13 +1,21 @@
 # format-playlist
 
-Prints the track names from the `#EXTINF` entries in an M3U playlist.
+Prints track titles from the `#EXTINF` entries in an M3U playlist.
 
 ## Usage
 
-Run it from the repository root and pass the playlist file as the first argument:
+Run from the tool directory with Go:
 
 ```sh
-./tools/format-playlist/format-playlist path/to/playlist.m3u
+cd tools/format-playlist
+go run . path/to/playlist.m3u8
 ```
 
-Requires Bash and the standard `cat`, `grep`, and `sed` command-line utilities.
+From the repository root, build and run a standalone binary:
+
+```sh
+make build
+./tools/format-playlist/bin/format-playlist path/to/playlist.m3u8
+```
+
+This tool requires Go 1.24 or later. Its local targets are `make -C tools/format-playlist test`, `check`, and `build`. The root [project README](../../README.md) describes the language-neutral lifecycle commands. The command prints one title per `#EXTINF` entry, preserving commas and Unicode in titles.

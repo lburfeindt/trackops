@@ -1,0 +1,5 @@
+#EXTM3U
+#EXTINF:180,Example Artist - Example Track
+/music/example-track.mp3
+#EXTINF:240,Artist One, Artist Two - Café Song, Club Mix
+/music/café song.mp3
