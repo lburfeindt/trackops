@@ -14,5 +14,6 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version-file: tools/format-playlist/go.mod
+          cache-dependency-path: tools/*/go.sum
       - run: make verify
       - run: make build
