@@ -1,0 +1,2 @@
+#!/bin/bash
+cat $1 | grep "#EXTINF:" | sed 's/^#EXTINF:[0-9]*,//g'
