@@ -24,7 +24,7 @@
 
 - The repository root has no Go module, and the Go module is under the formatter tool: verify root and tool `go.mod` placement.
 - The tool tests and fixture work from the nested module: run `make -C tools/format-playlist test`.
-- Root targets delegate successfully and build the binary in root `bin/`: run root `make test`, `make check`, and `make build`.
+- Root targets delegate successfully and build the binary in `tools/format-playlist/bin/`: run root `make test`, `make check`, and `make build`.
 - CI selects the nested Go module version: inspect `go-version-file` against the relocated `go.mod`.
 - The formatter behavior remains intact: run the parser and CLI tests for commas, Unicode, CRLF, malformed entries, path spaces, argument errors, and unreadable paths.
 
@@ -46,7 +46,7 @@
 
 - [x] **Step 1: Verify the new module-location assertion fails.** Run `test -f tools/format-playlist/go.mod`; expect failure because the module is currently at the repository root.
 - [x] **Step 2: Relocate the module and sources.** Move the current Go files and fixture under `tools/format-playlist/`; set the module path to `github.com/lburfeindt/trackops/tools/format-playlist`; update the parser import in `main.go` and the CLI test's fixture path to `testdata/playlist.m3u8`.
-- [x] **Step 3: Add tool-local Make targets.** `test` runs `go test ./...`; `check` verifies gofmt, runs `go vet ./...`, then tests; `build` creates `../../bin/` and builds `../../bin/format-playlist`.
+- [x] **Step 3: Add tool-local Make targets.** `test` runs `go test ./...`; `check` verifies gofmt, runs `go vet ./...`, then tests; `build` creates `bin/` and builds `bin/format-playlist` inside the tool directory.
 - [x] **Step 4: Run `make -C tools/format-playlist test`** and confirm both packages pass from the nested module.
 - [x] **Step 5: Verify `test ! -f go.mod` at the repository root** and `test -f tools/format-playlist/go.mod`.
 - [x] **Step 6: Commit** as `refactor: scope Go module to playlist tool`.
@@ -65,6 +65,6 @@
 
 - [x] **Step 1: Update root Makefile** to register `tools/format-playlist` and delegate root `test`, `check`, and `build` targets to every registered tool's matching target.
 - [x] **Step 2: Update CI** to read Go from `tools/format-playlist/go.mod`, then run root `make check` and `make build` on pushes and pull requests.
-- [x] **Step 3: Update documentation.** Explain that tools own their language prerequisites and lifecycle. Document root `make test/check/build`; document `go run . <playlist>` from `tools/format-playlist` and root `make build` followed by `./bin/format-playlist <playlist>`.
-- [x] **Step 4: Run `make test`, `make check`, `make build`, and `git diff --check` from the repository root.** Confirm tests and build pass and `bin/format-playlist` is ignored by Git.
+- [x] **Step 3: Update documentation.** Explain that tools own their language prerequisites and lifecycle. Document root `make test/check/build`; document `go run . <playlist>` from `tools/format-playlist` and root `make build` followed by `./tools/format-playlist/bin/format-playlist <playlist>`.
+- [x] **Step 4: Run `make test`, `make check`, `make build`, and `git diff --check` from the repository root.** Confirm tests and build pass and `tools/format-playlist/bin/format-playlist` is ignored by Git.
 - [x] **Step 5: Commit** as `chore: delegate root workflow to tools`.

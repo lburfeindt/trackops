@@ -10,5 +10,5 @@ check:
 	go test ./...
 
 build:
-	mkdir -p ../../bin
-	go build -o ../../bin/format-playlist .
+	mkdir -p bin
+	go build -o bin/format-playlist .

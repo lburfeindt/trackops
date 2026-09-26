@@ -26,6 +26,7 @@ tools/
       playlist/
         m3u.go
         m3u_test.go
+    bin/  # generated and ignored
     testdata/
       playlist.m3u8
     README.md
@@ -53,7 +54,7 @@ The `tools/format-playlist/Makefile` will provide:
 
 - `make test` — run `go test ./...`.
 - `make check` — verify gofmt, run `go vet ./...`, and run all tests.
-- `make build` — build the `format-playlist` executable into the repository's ignored `bin/` directory.
+- `make build` — build the `format-playlist` executable into the tool's ignored `bin/` directory.
 
 The root `Makefile` will delegate `test`, `check`, and `build` to registered tool Makefiles. Root CI will provision the Go version from `tools/format-playlist/go.mod` and run the root `make check` and `make build` targets on pushes and pull requests. The root README will state prerequisites for the tools currently in the repository and document the root commands. New tools in other languages can add their own Makefile targets, module or runtime metadata, tests, and CI runtime setup without changing the format-playlist module. No external test framework or runtime dependencies are introduced for format-playlist.
 
