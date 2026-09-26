@@ -11,16 +11,17 @@ import (
 )
 
 func TestRun_PrintsTitlesFromPathWithSpaces(t *testing.T) {
-	// Given a playlist fixture and a path containing spaces
-	fixture, err := os.ReadFile("testdata/playlist.m3u8")
+	// Given
+	playlistFixture, err := os.ReadFile("testdata/playlist.m3u8")
 	require.NoError(t, err)
 	playlistPath := filepath.Join(t.TempDir(), "frequency sessions.m3u8")
-	require.NoError(t, os.WriteFile(playlistPath, fixture, 0o600))
+	require.NoError(t, os.WriteFile(playlistPath, playlistFixture, 0o600))
 
+	// When
 	var stdout, stderr bytes.Buffer
-	// When the playlist is run
 	status := run([]string{playlistPath}, &stdout, &stderr)
-	// Then the command prints all titles and no errors
+
+	// Then
 	want := "Example Artist - Example Track\n" +
 		"Artist One, Artist Two - Café Song, Club Mix\n"
 	assert.Zero(t, status)
@@ -39,11 +40,13 @@ func TestRun_RejectsMissingOrExtraArguments(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			// Given
+
+			// When
 			var stdout, stderr bytes.Buffer
-			// Given missing or extra command-line arguments
-			// When the command is run
 			status := run(test.args, &stdout, &stderr)
-			// Then it fails with a usage message and no standard output
+
+			// Then
 			assert.NotZero(t, status)
 			assert.Contains(t, stderr.String(), "usage: format-playlist <playlist>")
 			assert.Empty(t, stdout.String())
@@ -52,13 +55,14 @@ func TestRun_RejectsMissingOrExtraArguments(t *testing.T) {
 }
 
 func TestRun_ReportsUnreadablePlaylist(t *testing.T) {
-	// Given a path to a missing playlist
-	playlistPath := filepath.Join(t.TempDir(), "missing playlist.m3u8")
-	var stdout, stderr bytes.Buffer
-	// When the command is run
-	status := run([]string{playlistPath}, &stdout, &stderr)
+	// Given
+	invalidPlaylistPath := filepath.Join(t.TempDir(), "missing playlist.m3u8")
 
-	// Then it fails with a playlist open error and no standard output
+	// When
+	var stdout, stderr bytes.Buffer
+	status := run([]string{invalidPlaylistPath}, &stdout, &stderr)
+
+	// Then
 	assert.NotZero(t, status)
 	assert.Contains(t, stderr.String(), "format-playlist: open playlist:")
 	assert.Empty(t, stdout.String())

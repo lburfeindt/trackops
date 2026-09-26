@@ -25,12 +25,14 @@
 - Test files are placed next to the code they test with `_test.go` suffix
 - Test functions use the naming pattern `Test<FunctionName>` or `Test<FunctionName>_<Scenario>`
 - Use table-driven tests for similar test cases with different inputs
-- Structure tests with Given/When/Then (Arrange/Act/Assert) comments
+- Mark each test phase with the bare comments `// Given`, `// When`, and `// Then`, in that order
+- Put a blank line between each phase marker and the preceding phase; keep setup, action, and assertions under their matching markers
+- Keep phase markers as bare labels without explanatory text; a table-driven subtest may have an empty Given phase when the case table supplies its setup
+- Use scenario-specific names for test data, such as `playlistFixture` or `invalidPlaylistPath`, rather than generic names
 - Use subtests (t.Run) for organizing related test cases
 - Use descriptive test names that explain the scenario being tested
 - Use mock implementations for interface dependencies
 - Test both success and error paths
 - Use assertions from the testify package for cleaner test code (assert, require)
 - Mock external dependencies to isolate unit tests
-
 
