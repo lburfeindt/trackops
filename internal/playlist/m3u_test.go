@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-func TestTitlesFromFrequencyFixture(t *testing.T) {
-	file, err := os.Open("../../testdata/frequency_sessions.m3u8")
+func TestTitlesFromFixture(t *testing.T) {
+	file, err := os.Open("../../testdata/playlist.m3u8")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -20,10 +20,8 @@ func TestTitlesFromFrequencyFixture(t *testing.T) {
 	}
 
 	want := []string{
-		"Forbidden Society - Distanced (Original Mix)",
-		"Bcee, S.P.Y - Is Anybody out There? (S.P.Y. VIP)",
-		"Brian Brainstorm, Fú, Bomsh - Get You Down (Original Mix)",
-		"Mason, Princess Superstar - Perfect (Exceeder) (1991 Remix)",
+		"Example Artist - Example Track",
+		"Artist One, Artist Two - Café Song, Club Mix",
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("Titles() = %#v, want %#v", got, want)
@@ -31,13 +29,13 @@ func TestTitlesFromFrequencyFixture(t *testing.T) {
 }
 
 func TestTitlesPreservesCommasAndUnicode(t *testing.T) {
-	input := strings.NewReader("#EXTINF:268,Brian Brainstorm, Fú, Bomsh - Get You Down (Original Mix)\n")
+	input := strings.NewReader("#EXTINF:240,Artist One, Artist Two - Café Song, Club Mix\n")
 
 	got, err := Titles(input)
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"Brian Brainstorm, Fú, Bomsh - Get You Down (Original Mix)"}
+	want := []string{"Artist One, Artist Two - Café Song, Club Mix"}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("Titles() = %#v, want %#v", got, want)
 	}
@@ -56,13 +54,13 @@ func TestTitlesIgnoresMalformedAndNonEntryLines(t *testing.T) {
 }
 
 func TestTitlesHandlesCRLF(t *testing.T) {
-	input := strings.NewReader("#EXTM3U\r\n#EXTINF:270,Forbidden Society - Distanced\r\n/music/track.mp3\r\n")
+	input := strings.NewReader("#EXTM3U\r\n#EXTINF:180,Example Artist - Example Track\r\n/music/example-track.mp3\r\n")
 
 	got, err := Titles(input)
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"Forbidden Society - Distanced"}
+	want := []string{"Example Artist - Example Track"}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("Titles() = %#v, want %#v", got, want)
 	}

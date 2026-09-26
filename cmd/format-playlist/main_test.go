@@ -9,7 +9,7 @@ import (
 )
 
 func TestRunPrintsTitlesFromPathWithSpaces(t *testing.T) {
-	fixture, err := os.ReadFile("../../testdata/frequency_sessions.m3u8")
+	fixture, err := os.ReadFile("../../testdata/playlist.m3u8")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,10 +23,8 @@ func TestRunPrintsTitlesFromPathWithSpaces(t *testing.T) {
 	if status != 0 {
 		t.Fatalf("run() status = %d, stderr = %q; want 0", status, stderr.String())
 	}
-	want := "Forbidden Society - Distanced (Original Mix)\n" +
-		"Bcee, S.P.Y - Is Anybody out There? (S.P.Y. VIP)\n" +
-		"Brian Brainstorm, Fú, Bomsh - Get You Down (Original Mix)\n" +
-		"Mason, Princess Superstar - Perfect (Exceeder) (1991 Remix)\n"
+	want := "Example Artist - Example Track\n" +
+		"Artist One, Artist Two - Café Song, Club Mix\n"
 	if stdout.String() != want {
 		t.Fatalf("stdout = %q, want %q", stdout.String(), want)
 	}

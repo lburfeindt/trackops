@@ -23,12 +23,12 @@ internal/
     m3u.go
     m3u_test.go
 testdata/
-  frequency_sessions.m3u8
+  playlist.m3u8
 Makefile
 go.mod
 ```
 
-The command package owns argument handling, file access, output, and process exit behavior. The internal playlist package parses `#EXTINF` entries and returns titles, keeping parsing testable without launching a process. A compact, sanitized fixture based on the supplied real-world playlist covers representative metadata, punctuation, commas in titles, Unicode, and filenames with spaces without storing the user's absolute media paths.
+The command package owns argument handling, file access, output, and process exit behavior. The internal playlist package parses `#EXTINF` entries and returns titles, keeping parsing testable without launching a process. Tests use a small, hand-authored fixture with synthetic titles and paths, independent of the supplied real-world playlist file.
 
 ## Command behavior
 

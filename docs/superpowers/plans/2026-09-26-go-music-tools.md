@@ -35,13 +35,13 @@
 - Create: `go.mod`
 - Create: `internal/playlist/m3u.go`
 - Create: `internal/playlist/m3u_test.go`
-- Create: `testdata/frequency_sessions.m3u8`
+- Create: `testdata/playlist.m3u8`
 
 **Interfaces:**
 - Produces: `playlist.Titles(r io.Reader) ([]string, error)`; returns titles from `#EXTINF` lines, splitting at the first comma after the prefix.
 
-- [x] **Step 1: Initialize the module and add a compact fixture.** Set `go.mod` to `module github.com/lburfeindt/trackops` and `go 1.24`. Add `testdata/frequency_sessions.m3u8` using representative entries from the supplied playlist, including comma-separated artists, Unicode, punctuation, and titles with commas. Replace all absolute media paths with harmless placeholders.
-- [x] **Step 2: Write failing parser tests** named `TestTitlesFromFrequencyFixture`, `TestTitlesPreservesCommasAndUnicode`, `TestTitlesIgnoresMalformedAndNonEntryLines`, and `TestTitlesHandlesCRLF`. Assert exact output slices, including an empty result for a playlist with no valid entries.
+- [x] **Step 1: Initialize the module and add a compact fixture.** Set `go.mod` to `module github.com/lburfeindt/trackops` and `go 1.24`. Add `testdata/playlist.m3u8` with synthetic titles and paths covering comma-separated artists, Unicode, punctuation, and commas in titles. Keep it independent of the supplied real-world playlist file.
+- [x] **Step 2: Write failing parser tests** named `TestTitlesFromFixture`, `TestTitlesPreservesCommasAndUnicode`, `TestTitlesIgnoresMalformedAndNonEntryLines`, and `TestTitlesHandlesCRLF`. Assert exact output slices, including an empty result for a playlist with no valid entries.
 - [x] **Step 3: Run `go test ./internal/playlist`** and confirm it fails because `playlist.Titles` is not implemented.
 - [x] **Step 4: Implement `Titles(r io.Reader) ([]string, error)`** in `internal/playlist/m3u.go`. Scan line by line, recognize the exact `#EXTINF:` prefix, find the first comma, append the remainder as the title, and return scanner errors.
 - [x] **Step 5: Run `go test ./internal/playlist`** and confirm all parser tests pass.
