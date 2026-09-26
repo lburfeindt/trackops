@@ -4,6 +4,10 @@ updates:
     directory: /tools/format-playlist
     schedule:
       interval: monthly
+  - package-ecosystem: gomod
+    directory: /tools/id3-sanitizer
+    schedule:
+      interval: monthly
   - package-ecosystem: github-actions
     directory: /
     schedule:

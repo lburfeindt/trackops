@@ -1,4 +1,4 @@
-TOOLS := tools/format-playlist
+TOOLS := tools/format-playlist tools/id3-sanitizer
 
 .PHONY: test verify format lint build
 
