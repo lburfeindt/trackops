@@ -50,16 +50,16 @@ From the tool directory, the command will be runnable with `go run . <playlist>`
 
 Use Go's built-in `testing` package. Parser tests will cover normal entries, commas and Unicode in titles, ignored non-entry lines, and malformed entries. Command tests will cover argument and file errors plus output for the fixture.
 
-The `tools/format-playlist/Makefile` will provide:
+The `../../../tools/format-playlist/Makefile` will provide:
 
 - `make test` — run `go test ./...`.
 - `make check` — verify gofmt, run `go vet ./...`, and run all tests.
 - `make build` — build the `format-playlist` executable into the tool's ignored `bin/` directory.
 
-The root `Makefile` will delegate `test`, `check`, and `build` to registered tool Makefiles. Root CI will provision the Go version from `tools/format-playlist/go.mod` and run the root `make check` and `make build` targets on pushes and pull requests. The root README will state prerequisites for the tools currently in the repository and document the root commands. New tools in other languages can add their own Makefile targets, module or runtime metadata, tests, and CI runtime setup without changing the format-playlist module. No external test framework or runtime dependencies are introduced for format-playlist.
+The root `Makefile` will delegate `test`, `check`, and `build` to registered tool Makefiles. Root CI will provision the Go version from `../../../tools/format-playlist/go.mod` and run the root `make check` and `make build` targets on pushes and pull requests. The root README will state prerequisites for the tools currently in the repository and document the root commands. New tools in other languages can add their own Makefile targets, module or runtime metadata, tests, and CI runtime setup without changing the format-playlist module. No external test framework or runtime dependencies are introduced for format-playlist.
 
 ## Migration and scope
 
-Move the Go module, command, parser, tests, and fixture under `tools/format-playlist/`; remove the Bash formatter and its temporary shell-only regression test. Add a tool-owned Makefile and keep the root Makefile as a language-neutral dispatcher. Update the tool and root READMEs to the new invocation and lifecycle. Defer packaging, release automation, versioning, third-party libraries, and additional tools until needed.
+Move the Go module, command, parser, tests, and fixture under `../../../tools/format-playlist`; remove the Bash formatter and its temporary shell-only regression test. Add a tool-owned Makefile and keep the root Makefile as a language-neutral dispatcher. Update the tool and root READMEs to the new invocation and lifecycle. Defer packaging, release automation, versioning, third-party libraries, and additional tools until needed.
 
 The previous music-tools layout design remains the record of the initial repository organization; this design supersedes its Bash implementation constraint while restoring its per-tool isolation goal.
