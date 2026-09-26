@@ -1,6 +1,6 @@
 # Track Ops
 
-A small collection of independent command-line tools for chore tasks when working with music software like Rekordbox.
+A small collection of independent vibe coded command-line tools for chore tasks when working with music software like Rekordbox.
 
 ## Development
 
