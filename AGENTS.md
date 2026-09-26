@@ -31,5 +31,4 @@ When using Superpowers:
    Superpowers skill.
 5. Never put planning artifacts in the repository root.
 
-
 **IMPORTANT**: Never consider a code change complete until all tests pass successfully and the code has been formatted and linted properly. Always verify your changes with the appropriate tests before finishing.
