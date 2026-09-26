@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/lburfeindt/trackops/internal/playlist"
+	"github.com/lburfeindt/trackops/tools/format-playlist/internal/playlist"
 )
 
 func main() {

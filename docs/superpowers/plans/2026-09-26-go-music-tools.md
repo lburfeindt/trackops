@@ -1,10 +1,10 @@
-# Go Music Tools Implementation Plan
+# Independent Music Tools Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax.
 
-**Goal:** Replace the Bash playlist formatter with a tested Go CLI and establish a repeatable local and CI workflow.
+**Goal:** Keep each music CLI self-contained in its own language while providing common root commands for testing, checking, building, and CI.
 
-**Architecture:** `cmd/format-playlist` handles arguments and files, while `internal/playlist` parses M3U metadata. Go's standard library supplies tests and build tooling; Make targets and GitHub Actions expose the lifecycle.
+**Architecture:** Each tool owns its module or runtime configuration, sources, tests, fixture, README, and `test`, `check`, and `build` targets. The root Makefile delegates those targets to the registered tool directories; root CI sets up current tool prerequisites and runs the root targets.
 
 **Tech Stack:** Go 1.24+, Go `testing`, Make, GitHub Actions.
 
@@ -12,75 +12,59 @@
 
 ## Global Constraints
 
-- Use Go's standard library for the initial implementation and tests.
-- Print one title per `#EXTINF` entry; preserve commas and Unicode by splitting at the first metadata comma.
+- Keep format-playlist as an independent Go module at `tools/format-playlist/`.
+- Use Go's standard library for the formatter and its tests.
+- Preserve commas and Unicode by splitting `#EXTINF` at the first metadata comma.
 - Ignore non-`#EXTINF` lines and malformed entries without a title separator.
 - Return a clear error and nonzero status for missing or extra arguments and unreadable files.
-- Do not add third-party command, test, or runtime dependencies.
-- Provide `make test`, `make check`, and `make build`; CI runs checks and builds on pushes and pull requests.
+- Do not add a root language-specific module, third-party command/test frameworks, or shared runtime.
+- Provide root `make test`, `make check`, and `make build` dispatching to tool-owned Makefiles.
 
 ## Review Focus
 
-- A title with commas and Unicode remains intact: parser fixture test asserts exact titles.
-- CRLF input does not leave carriage returns in output: parser test asserts exact title.
-- Malformed `#EXTINF` entries without a comma are ignored: parser test asserts no title is emitted.
-- A playlist path containing spaces works: CLI test invokes `run` with a temporary path containing spaces.
-- Missing/extra arguments and unreadable paths fail with a useful stderr message and nonzero result: CLI tests cover each case.
+- The repository root has no Go module, and the Go module is under the formatter tool: verify root and tool `go.mod` placement.
+- The tool tests and fixture work from the nested module: run `make -C tools/format-playlist test`.
+- Root targets delegate successfully and build the binary in root `bin/`: run root `make test`, `make check`, and `make build`.
+- CI selects the nested Go module version: inspect `go-version-file` against the relocated `go.mod`.
+- The formatter behavior remains intact: run the parser and CLI tests for commas, Unicode, CRLF, malformed entries, path spaces, argument errors, and unreadable paths.
 
 ---
 
-### Task 1: Parse M3U entries
+### Task 1: Scope the Go module to the playlist tool
 
 **Files:**
-- Create: `go.mod`
-- Create: `internal/playlist/m3u.go`
-- Create: `internal/playlist/m3u_test.go`
-- Create: `testdata/playlist.m3u8`
+- Move: `go.mod` to `tools/format-playlist/go.mod`
+- Move: `cmd/format-playlist/main.go` and `main_test.go` to `tools/format-playlist/`
+- Move: `internal/playlist/` to `tools/format-playlist/internal/playlist/`
+- Move: `testdata/playlist.m3u8` to `tools/format-playlist/testdata/playlist.m3u8`
+- Create: `tools/format-playlist/Makefile`
+- Delete: root `go.mod`, `cmd/`, `internal/`, and `testdata/`
 
 **Interfaces:**
-- Produces: `playlist.Titles(r io.Reader) ([]string, error)`; returns titles from `#EXTINF` lines, splitting at the first comma after the prefix.
+- Consumes: existing CLI `run(args []string, stdout, stderr io.Writer) int` and parser `playlist.Titles(r io.Reader) ([]string, error)`.
+- Produces: self-contained module `github.com/lburfeindt/trackops/tools/format-playlist` with tool-local test, check, and build targets.
 
-- [x] **Step 1: Initialize the module and add a compact fixture.** Set `go.mod` to `module github.com/lburfeindt/trackops` and `go 1.24`. Add `testdata/playlist.m3u8` with synthetic titles and paths covering comma-separated artists, Unicode, punctuation, and commas in titles. Keep it independent of the supplied real-world playlist file.
-- [x] **Step 2: Write failing parser tests** named `TestTitlesFromFixture`, `TestTitlesPreservesCommasAndUnicode`, `TestTitlesIgnoresMalformedAndNonEntryLines`, and `TestTitlesHandlesCRLF`. Assert exact output slices, including an empty result for a playlist with no valid entries.
-- [x] **Step 3: Run `go test ./internal/playlist`** and confirm it fails because `playlist.Titles` is not implemented.
-- [x] **Step 4: Implement `Titles(r io.Reader) ([]string, error)`** in `internal/playlist/m3u.go`. Scan line by line, recognize the exact `#EXTINF:` prefix, find the first comma, append the remainder as the title, and return scanner errors.
-- [x] **Step 5: Run `go test ./internal/playlist`** and confirm all parser tests pass.
-- [x] **Step 6: Commit** the parser and fixture as `feat: add M3U playlist parser`.
+- [x] **Step 1: Verify the new module-location assertion fails.** Run `test -f tools/format-playlist/go.mod`; expect failure because the module is currently at the repository root.
+- [x] **Step 2: Relocate the module and sources.** Move the current Go files and fixture under `tools/format-playlist/`; set the module path to `github.com/lburfeindt/trackops/tools/format-playlist`; update the parser import in `main.go` and the CLI test's fixture path to `testdata/playlist.m3u8`.
+- [x] **Step 3: Add tool-local Make targets.** `test` runs `go test ./...`; `check` verifies gofmt, runs `go vet ./...`, then tests; `build` creates `../../bin/` and builds `../../bin/format-playlist`.
+- [x] **Step 4: Run `make -C tools/format-playlist test`** and confirm both packages pass from the nested module.
+- [x] **Step 5: Verify `test ! -f go.mod` at the repository root** and `test -f tools/format-playlist/go.mod`.
+- [x] **Step 6: Commit** as `refactor: scope Go module to playlist tool`.
 
-### Task 2: Add the CLI command
-
-**Files:**
-- Create: `cmd/format-playlist/main.go`
-- Create: `cmd/format-playlist/main_test.go`
-
-**Interfaces:**
-- Consumes: `playlist.Titles(r io.Reader) ([]string, error)` from Task 1.
-- Produces: `run(args []string, stdout, stderr io.Writer) int`; returns zero on success and one after writing a useful error to stderr on failure. `main` passes process arguments and standard streams to `run` and exits with its result.
-
-- [x] **Step 1: Write failing command tests** named `TestRunPrintsTitlesFromPathWithSpaces`, `TestRunRejectsMissingOrExtraArguments`, and `TestRunReportsUnreadablePlaylist`. The success case uses the fixture copied to a temporary playlist path containing spaces and asserts exact stdout and empty stderr; failure cases assert nonzero status and a useful stderr message.
-- [x] **Step 2: Run `go test ./cmd/format-playlist`** and confirm it fails because the command's `run` function is not implemented.
-- [x] **Step 3: Implement the command** in `cmd/format-playlist/main.go`. Require exactly one argument; open and close the file; pass it to `playlist.Titles`; print each title on its own line; report usage or file/parser errors to stderr.
-- [x] **Step 4: Run `go test ./cmd/format-playlist` and `go test ./...`** and confirm both pass.
-- [x] **Step 5: Commit** the CLI and command tests as `feat: add format-playlist Go command`.
-
-### Task 3: Establish the project workflow
+### Task 2: Add root lifecycle dispatch
 
 **Files:**
-- Create: `Makefile`
-- Create: `.github/workflows/ci.yml`
-- Modify: `.gitignore`
+- Modify: `Makefile`
+- Modify: `.github/workflows/ci.yml`
 - Modify: `README.md`
 - Modify: `tools/format-playlist/README.md`
-- Delete: `tools/format-playlist/format-playlist`
-- Delete: `tools/format-playlist/test.sh`
 
 **Interfaces:**
-- Consumes: the Go command and module from Tasks 1 and 2.
-- Produces: `make test`, `make check`, and `make build`; documented source and binary invocations; CI that runs checks and build.
+- Consumes: `test`, `check`, and `build` targets from `tools/format-playlist/Makefile`.
+- Produces: root lifecycle commands that delegate to registered tools; CI configured from the Go module inside the tool.
 
-- [x] **Step 1: Define the Make targets.** `test` runs `go test ./...`; `check` fails if `gofmt -l` reports any Go files and then runs `go vet ./...` and `go test ./...`; `build` creates `bin/` and builds `bin/format-playlist` with `go build -o bin/format-playlist ./cmd/format-playlist`.
-- [x] **Step 2: Configure CI** in `.github/workflows/ci.yml` for pushes and pull requests. Set up the Go version from `go.mod`, then run `make check` and `make build`.
-- [x] **Step 3: Update documentation and ignore rules.** Document the Go prerequisite, `make test`, `make check`, `make build`, `go run ./cmd/format-playlist <playlist>`, and the built binary invocation. Add `/bin/` to `.gitignore`.
-- [x] **Step 4: Remove the superseded Bash executable and temporary shell test.**
-- [x] **Step 5: Run `make check`, `make build`, and `git diff --check`** and confirm all succeed, the binary exists at `bin/format-playlist`, and no generated binary is tracked.
-- [x] **Step 6: Commit** the project workflow and migration as `chore: establish Go project workflow`.
+- [ ] **Step 1: Update root Makefile** to register `tools/format-playlist` and delegate root `test`, `check`, and `build` targets to every registered tool's matching target.
+- [ ] **Step 2: Update CI** to read Go from `tools/format-playlist/go.mod`, then run root `make check` and `make build` on pushes and pull requests.
+- [ ] **Step 3: Update documentation.** Explain that tools own their language prerequisites and lifecycle. Document root `make test/check/build`; document `go run . <playlist>` from `tools/format-playlist` and root `make build` followed by `./bin/format-playlist <playlist>`.
+- [ ] **Step 4: Run `make test`, `make check`, `make build`, and `git diff --check` from the repository root.** Confirm tests and build pass and `bin/format-playlist` is ignored by Git.
+- [ ] **Step 5: Commit** as `chore: delegate root workflow to tools`.

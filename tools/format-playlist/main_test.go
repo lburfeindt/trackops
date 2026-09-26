@@ -9,7 +9,7 @@ import (
 )
 
 func TestRunPrintsTitlesFromPathWithSpaces(t *testing.T) {
-	fixture, err := os.ReadFile("../../testdata/playlist.m3u8")
+	fixture, err := os.ReadFile("testdata/playlist.m3u8")
 	if err != nil {
 		t.Fatal(err)
 	}
