@@ -1,6 +1,6 @@
 TOOLS := tools/format-playlist
 
-.PHONY: test check build
+.PHONY: test verify format lint build
 
-test check build:
+test verify format lint build:
 	@set -e; for tool in $(TOOLS); do $(MAKE) -C "$$tool" $@; done
