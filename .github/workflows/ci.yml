@@ -14,6 +14,6 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v7
         with:
-          go-version-file: go.mod
+          go-version-file: tools/format-playlist/go.mod
       - run: make check
       - run: make build

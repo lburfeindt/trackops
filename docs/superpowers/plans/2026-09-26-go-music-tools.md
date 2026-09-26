@@ -63,8 +63,8 @@
 - Consumes: `test`, `check`, and `build` targets from `tools/format-playlist/Makefile`.
 - Produces: root lifecycle commands that delegate to registered tools; CI configured from the Go module inside the tool.
 
-- [ ] **Step 1: Update root Makefile** to register `tools/format-playlist` and delegate root `test`, `check`, and `build` targets to every registered tool's matching target.
-- [ ] **Step 2: Update CI** to read Go from `tools/format-playlist/go.mod`, then run root `make check` and `make build` on pushes and pull requests.
-- [ ] **Step 3: Update documentation.** Explain that tools own their language prerequisites and lifecycle. Document root `make test/check/build`; document `go run . <playlist>` from `tools/format-playlist` and root `make build` followed by `./bin/format-playlist <playlist>`.
-- [ ] **Step 4: Run `make test`, `make check`, `make build`, and `git diff --check` from the repository root.** Confirm tests and build pass and `bin/format-playlist` is ignored by Git.
-- [ ] **Step 5: Commit** as `chore: delegate root workflow to tools`.
+- [x] **Step 1: Update root Makefile** to register `tools/format-playlist` and delegate root `test`, `check`, and `build` targets to every registered tool's matching target.
+- [x] **Step 2: Update CI** to read Go from `tools/format-playlist/go.mod`, then run root `make check` and `make build` on pushes and pull requests.
+- [x] **Step 3: Update documentation.** Explain that tools own their language prerequisites and lifecycle. Document root `make test/check/build`; document `go run . <playlist>` from `tools/format-playlist` and root `make build` followed by `./bin/format-playlist <playlist>`.
+- [x] **Step 4: Run `make test`, `make check`, `make build`, and `git diff --check` from the repository root.** Confirm tests and build pass and `bin/format-playlist` is ignored by Git.
+- [x] **Step 5: Commit** as `chore: delegate root workflow to tools`.

@@ -1,10 +1,12 @@
 # Music Tools
 
-A small collection of command-line tools for music tasks, built with Go.
+A small collection of independent command-line tools for music tasks. Each tool owns its language and development lifecycle.
 
 ## Development
 
-Requires Go 1.24 or later and Make.
+Requires Make and the language runtimes listed in each tool's README. The current Go tool requires Go 1.24 or later.
+
+Run the registered tools' lifecycle from the repository root:
 
 ```sh
 make test
