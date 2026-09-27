@@ -2,6 +2,25 @@
 
 Removes the exact, case-sensitive `(Original Mix)` suffix and preceding spaces, tabs or line breaks from an MP3's ID3 title, then saves to the same path.
 
+## Native app
+
+The GUI uses [Zenity's Go library](https://github.com/ncruces/zenity) for native dialogs on macOS and Windows. No Go installation is needed to run the built app.
+
+Choose **Files…** to select one or several MP3s, or **Folder…** to process a directory and its subfolders. File selection filters for `.mp3`; batch processing accepts the extension case-insensitively. Choosing inputs starts sanitization immediately and saves to the original paths, without backups.
+
+A progress dialog stays open while processing. Canceling it stops between files; changes already completed remain saved. The result shows updated, unchanged and failed counts, with details for up to ten errors. A failed file does not stop the remaining files. Symlinks inside folders are skipped; directly selected symlinks are rejected. Overlapping selections process each identical absolute path once.
+
+Build a double-clickable Apple Silicon app for macOS 13 or later:
+
+```sh
+make -C tools/id3-sanitizer package-macos
+open "tools/id3-sanitizer/bin/ID3 Sanitizer.app"
+```
+
+Packaging requires the macOS command-line developer tools for ad-hoc signing. The bundle is intended for local use; signing with a Developer ID and notarization for distribution are not included. Native dialogs use macOS's built-in scripting tools.
+
+For development, run `go run ./cmd/id3-sanitizer-gui` from the tool directory, or run `bin/id3-sanitizer-gui` after `make build`. The existing CLI is also built. Windows-compatible dialog code is included, but a Windows build, packaging and runtime verification are deferred. Linux GUI use requires `zenity`, `matedialog` or `qarma`; automated tests do not open dialogs.
+
 ## Usage
 
 Run from the tool directory with Go:
