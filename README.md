@@ -16,7 +16,7 @@ make verify
 make build
 ```
 
-Run `make clear` to clear Go's downloaded-module, build, and test-result caches through both tools. These caches are shared with other Go projects. Then run `make test` to download the pinned dependencies again, rebuild, and rerun the tests. Built binaries are kept.
+Run `make clear` to remove both tools' `bin/` directories and clear Go's downloaded-module, build, and test-result caches. These caches are shared with other Go projects. Then run `make test` to download the pinned dependencies again, rebuild, and rerun the tests. Run `make build` to recreate the binaries.
 
 ## Tools
 

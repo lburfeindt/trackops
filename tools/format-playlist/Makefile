@@ -23,3 +23,4 @@ build:
 
 clear:
 	go clean -cache -testcache -modcache
+	rm -rf bin
