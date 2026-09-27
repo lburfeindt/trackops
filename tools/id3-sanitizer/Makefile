@@ -1,4 +1,4 @@
-.PHONY: test verify format lint build clear
+.PHONY: test verify format lint build clean
 
 format:
 	gofmt -w .
@@ -19,6 +19,6 @@ build:
 	mkdir -p bin
 	go build -o bin/id3-sanitizer .
 
-clear:
+clean:
 	go clean -cache -testcache -modcache
 	rm -rf bin
