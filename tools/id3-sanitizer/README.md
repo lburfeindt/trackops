@@ -31,8 +31,8 @@ For example, `What a tune (Original Mix)` becomes `What a tune`. The command pri
 
 ## Development
 
-Requires Go 1.27.1 or later. Local targets are `format`, `lint`, `test`, `verify`, `build`, and `clear`, run as `make -C tools/id3-sanitizer <target>`. See the root [project README](../../README.md) for shared lifecycle commands.
+Requires Go 1.27.1 or later. Local targets are `format`, `lint`, `test`, `verify`, `build`, and `clean`, run as `make -C tools/id3-sanitizer <target>`. See the root [project README](../../README.md) for shared lifecycle commands.
 
-`make clear` removes the tool's `bin/` directory and Go's shared downloaded-module, build, and test-result caches. The next `make test` downloads dependencies again and rebuilds before running tests. Run `make build` to recreate the binary.
+`make clean` removes the tool's `bin/` directory and Go's shared downloaded-module, build, and test-result caches. The next `make test` downloads dependencies again and rebuilds before running tests. Run `make build` to recreate the binary.
 
 `testdata/Silence.mp3` is the supplied sample. Tests sanitize temporary copies and check the resulting title, metadata, audio and repeat-run behavior. The ID3 library is used only by tests as an independent tag reader; the command preserves raw tag data.

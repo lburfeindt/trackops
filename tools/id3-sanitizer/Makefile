@@ -1,9 +1,7 @@
-.PHONY: test verify format lint build clear
-
-GO_FILES := $(shell find . -name '*.go' -not -path './.git/*')
+.PHONY: test verify format lint build clean
 
 format:
-	gofmt -w $(GO_FILES)
+	gofmt -w .
 
 lint:
 	go vet ./...
@@ -12,7 +10,7 @@ test:
 	go test ./...
 
 verify:
-	@unformatted="$$(gofmt -l $(GO_FILES))"; \
+	@unformatted="$$(gofmt -l .)"; \
 	if [ -n "$$unformatted" ]; then printf '%s\n' "$$unformatted"; exit 1; fi
 	$(MAKE) lint
 	$(MAKE) test
@@ -21,6 +19,6 @@ build:
 	mkdir -p bin
 	go build -o bin/id3-sanitizer .
 
-clear:
+clean:
 	go clean -cache -testcache -modcache
 	rm -rf bin
