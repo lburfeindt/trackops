@@ -16,6 +16,8 @@ make verify
 make build
 ```
 
+Run `make clear` to clear Go's downloaded-module, build, and test-result caches through both tools. These caches are shared with other Go projects. Then run `make test` to download the pinned dependencies again, rebuild, and rerun the tests. Built binaries are kept.
+
 ## Tools
 
 - [format-playlist](tools/format-playlist/README.md) — prints track names from an M3U playlist's `#EXTINF` entries.

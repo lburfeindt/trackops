@@ -1,4 +1,4 @@
-.PHONY: test verify format lint build
+.PHONY: test verify format lint build clear
 
 GO_FILES := $(shell find . -name '*.go' -not -path './.git/*')
 
@@ -20,3 +20,6 @@ verify:
 build:
 	mkdir -p bin
 	go build -o bin/id3-sanitizer .
+
+clear:
+	go clean -cache -testcache -modcache
