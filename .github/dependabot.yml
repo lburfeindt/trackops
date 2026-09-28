@@ -1,14 +1,28 @@
 version: 2
 updates:
   - package-ecosystem: gomod
-    directory: /tools/format-playlist
+    directories:
+      - /tools/format-playlist
+      - /tools/id3-sanitizer
     schedule:
       interval: monthly
-  - package-ecosystem: gomod
-    directory: /tools/id3-sanitizer
-    schedule:
-      interval: monthly
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
+      go-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+      github-actions-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
