@@ -2,6 +2,8 @@
 
 A small collection of independent vibe coded tools for chore tasks when working with music software like Rekordbox.
 
+See [documentation](docs/README.md) for shared terms and lasting project decisions.
+
 ## Development
 
 Requires Make and the language runtimes listed in each tool's README. The current Go tools require Go 1.27.1 or later.
