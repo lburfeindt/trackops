@@ -6,6 +6,8 @@ Run the small interaction test with `node --test .scratch/trackops-app/window-pr
 
 Question: Does one small window make the two tool flows clear, including cancel, empty playlists, and errors?
 
+The playlist auto-save behavior below was superseded by the [issue #28 saving decision](2026-10-18-playlist-saving.md). The prototype remains a record of the earlier window review.
+
 This is throwaway, simulated UI for human review. No file picker, processing, or file write is connected. The two top buttons open the tool flows. The lower controls simulate chooser outcomes, and walkthroughs cover the main paths. Copy writes the displayed titles, one per line, when browser clipboard access permits.
 
 Assumptions to review:

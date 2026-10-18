@@ -25,7 +25,7 @@ TrackOps Go module
 └── internal/playlist: playlist title extraction
 ```
 
-The Wails adapter passes selected paths to the feature packages and receives structured results. ID3 processing retains its current file and batch behavior; playlist processing retains its current title extraction behavior and writes the extracted titles to a sibling text file. A later CLI can call the same packages through another entry point. Existing CLI and Zenity entry points and their standalone packaging leave the build when the unified app replaces them. The root lifecycle targets will run the one app module.
+The Wails adapter passes selected paths to the feature packages and receives structured results. ID3 processing retains its current file and batch behavior; playlist processing retains its current title extraction behavior. The app writes the extracted titles to a sibling text file only when the user chooses **Save titles**, as decided in [issue #28](https://github.com/lburfeindt/trackops/issues/28). A later CLI can call the same packages through another entry point. Existing CLI and Zenity entry points and their standalone packaging leave the build when the unified app replaces them. The root lifecycle targets will run the one app module.
 
 Window interaction details belong to [issue #21](https://github.com/lburfeindt/trackops/issues/21); macOS packaging details belong to [issue #22](https://github.com/lburfeindt/trackops/issues/22). This ticket does not change processing behavior.
 
