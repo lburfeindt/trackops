@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TrackOps</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>TrackOps</h1>
+        <p>Music library tools</p>
+      </header>
+      <nav aria-label="Tools">
+        <button type="button" disabled title="Available soon">ID3 Sanitizer</button>
+        <button type="button" id="open-playlist">Format Playlist</button>
+      </nav>
+      <section aria-labelledby="playlist-heading">
+        <h2 id="playlist-heading">Playlist titles</h2>
+        <p id="playlist-status" role="status" aria-live="polite">Choose a playlist to see its titles.</p>
+        <ol id="titles"></ol>
+      </section>
+    </main>
+  </body>
+</html>
