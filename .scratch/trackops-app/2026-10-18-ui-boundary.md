@@ -4,7 +4,7 @@ Approved planning note for [issue #20](https://github.com/lburfeindt/trackops/is
 
 ## Established context
 
-- The first app is macOS only: a small window with ID3 Sanitizer and Format Playlist buttons. ID3 accepts files or a folder; playlist titles appear in the app with Copy and are written to a sibling text file. See [map #18](https://github.com/lburfeindt/trackops/issues/18) and the [approved window flow](../../docs/design/first-window.md).
+- The first app is macOS only: a small window with ID3 Sanitizer and Format Playlist buttons. ID3 accepts files or a folder; playlist titles appear in the app with Copy and are written to a sibling text file. See [map #18](https://github.com/lburfeindt/trackops/issues/18) and the [approved window flow](2026-10-18-window-interactions.md).
 - [UI research #19](https://github.com/lburfeindt/trackops/issues/19) found SwiftUI, Wails v2, and Fyne v2 viable. SwiftUI and Wails offer native pickers directly; Fyne needs a bridge to preserve one.
 - Both tools are separate Go modules. Reusable code lives in module-local `internal/` packages. The ID3 GUI currently combines Zenity dialogs with batch processing; the playlist CLI prints results from `playlist.Titles`.
 
