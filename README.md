@@ -1,6 +1,6 @@
 # Track Ops
 
-A small collection of independent vibe coded command-line tools for chore tasks when working with music software like Rekordbox.
+A small collection of independent vibe coded tools for chore tasks when working with music software like Rekordbox.
 
 ## Development
 
@@ -21,4 +21,4 @@ Run `make clean` to remove both tools' `bin/` directories and clear Go's downloa
 ## Tools
 
 - [format-playlist](tools/format-playlist/README.md) — prints track names from an M3U playlist's `#EXTINF` entries.
-- [id3-sanitizer](tools/id3-sanitizer/README.md) — removes `(Original Mix)` from MP3 title suffixes and saves to the same file.
+- [id3-sanitizer](tools/id3-sanitizer/README.md) — removes `(Original Mix)` from MP3 title suffixes, with a CLI and native file/folder chooser.
