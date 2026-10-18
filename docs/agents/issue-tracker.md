@@ -2,6 +2,8 @@
 
 Issues and work specs live in this repository's GitHub Issues. Run `gh` in this checkout to select its remote.
 
+Run networked `gh` calls as standalone commands. In this Codex environment, the same read succeeds directly but shell redirection or a subprocess can run without DNS access and fail immediately with `lookup api.github.com: no such host`. Capture `gh` output from the tool result, then write local files in a separate step. If a compound command is necessary, request network-enabled execution for that call.
+
 ## Operations
 
 - Create: `gh issue create --title "..." --body-file <file>`.
