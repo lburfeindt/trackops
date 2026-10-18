@@ -4,7 +4,7 @@ Approved planning note for [issue #20](https://github.com/lburfeindt/trackops/is
 
 ## Established context
 
-- The first app is macOS only: a small window with ID3 Sanitizer and Format Playlist buttons. ID3 accepts files or a folder; playlist titles appear in the app with Copy. See [map #18](https://github.com/lburfeindt/trackops/issues/18).
+- The first app is macOS only: a small window with ID3 Sanitizer and Format Playlist buttons. ID3 accepts files or a folder; playlist titles appear in the app with Copy and are written to a sibling text file. See [map #18](https://github.com/lburfeindt/trackops/issues/18) and the [approved window flow](2026-10-18-window-interactions.md).
 - [UI research #19](https://github.com/lburfeindt/trackops/issues/19) found SwiftUI, Wails v2, and Fyne v2 viable. SwiftUI and Wails offer native pickers directly; Fyne needs a bridge to preserve one.
 - Both tools are separate Go modules. Reusable code lives in module-local `internal/` packages. The ID3 GUI currently combines Zenity dialogs with batch processing; the playlist CLI prints results from `playlist.Titles`.
 
@@ -25,7 +25,7 @@ TrackOps Go module
 └── internal/playlist: playlist title extraction
 ```
 
-The Wails adapter passes selected paths to the feature packages and receives structured results. ID3 processing retains its current file and batch behavior; playlist processing retains its current title extraction behavior. A later CLI can call the same packages through another entry point. Existing CLI and Zenity entry points and their standalone packaging leave the build when the unified app replaces them. The root lifecycle targets will run the one app module.
+The Wails adapter passes selected paths to the feature packages and receives structured results. ID3 processing retains its current file and batch behavior; playlist processing retains its current title extraction behavior and writes the extracted titles to a sibling text file. A later CLI can call the same packages through another entry point. Existing CLI and Zenity entry points and their standalone packaging leave the build when the unified app replaces them. The root lifecycle targets will run the one app module.
 
 Window interaction details belong to [issue #21](https://github.com/lburfeindt/trackops/issues/21); macOS packaging details belong to [issue #22](https://github.com/lburfeindt/trackops/issues/22). This ticket does not change processing behavior.
 

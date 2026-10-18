@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TrackOps window prototype</title>
+  <style>
+    :root { font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #26343b; background: #eef2f3; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 28px 16px 48px; }
+    main { max-width: 870px; margin: auto; }
+    h1 { font-size: 22px; margin: 0 0 5px; }
+    h2 { font-size: 17px; margin: 0 0 12px; }
+    p { margin: 0 0 14px; }
+    .intro { color: #50626b; max-width: 68ch; }
+    .window { background: white; border: 1px solid #cbd5d8; border-radius: 12px; box-shadow: 0 18px 50px #283d4a21; overflow: hidden; margin: 24px 0; min-height: 390px; }
+    .titlebar { height: 38px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border-bottom: 1px solid #dce3e5; background: #f8faf9; font-size: 13px; color: #53636a; }
+    .traffic { display: flex; gap: 6px; margin-right: 10px; }
+    .traffic i { width: 10px; height: 10px; border-radius: 50%; background: #d0d9dc; }
+    .window-body { padding: 26px; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .action { text-align: left; border: 1px solid #c9d6d8; background: #f8fbfa; border-radius: 10px; padding: 18px; min-height: 100px; cursor: pointer; }
+    .action:hover, .action:focus-visible { border-color: #087b79; outline: 2px solid #b7dfdc; }
+    .action strong { display: block; font-size: 16px; margin-bottom: 5px; }
+    .action span { color: #52656c; }
+    .panel { border-top: 1px solid #e2e8e9; padding-top: 20px; }
+    .muted { color: #617179; }
+    .notice { padding: 12px 14px; background: #eef7f6; border-radius: 8px; margin-bottom: 14px; }
+    .notice.error { background: #fff1ef; color: #8b3027; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
+    button { font: inherit; }
+    .button { color: #fff; background: #087b79; border: 1px solid #087b79; border-radius: 7px; padding: 8px 13px; cursor: pointer; }
+    .button.secondary { color: #204047; background: white; border-color: #adbdc2; }
+    .button:disabled { opacity: .45; cursor: default; }
+    .choices { display: flex; flex-wrap: wrap; gap: 9px; }
+    .titles { margin: 0 0 16px; padding-left: 24px; max-height: 220px; overflow: auto; white-space: pre-wrap; }
+    .titles li { padding: 4px 0; }
+    .review { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .card { border: 1px solid #d6e0e2; background: #fff; border-radius: 10px; padding: 18px; }
+    .state { margin: 0; display: grid; grid-template-columns: 110px 1fr; gap: 7px 12px; }
+    .state dt { color: #60727a; }
+    .state dd { margin: 0; overflow-wrap: anywhere; }
+    .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tab { border: 1px solid #b8c7cb; background: #fff; border-radius: 7px; padding: 7px 10px; cursor: pointer; }
+    .tab[aria-selected="true"] { color: #fff; background: #304e56; border-color: #304e56; }
+    .step { margin: 6px 0; width: 100%; text-align: left; }
+    .step.done { opacity: .55; }
+    .caption { font-size: 13px; color: #657880; margin-top: 12px; }
+    @media (max-width: 690px) { .actions, .review { grid-template-columns: 1fr; } .window-body { padding: 18px; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>TrackOps window prototype</h1>
+  <p class="intro">Question: Does one small window make the two tool flows clear, including cancel, empty playlists, and errors? This is a throwaway interaction sketch. Choices and processing are simulated; no music files are read or changed.</p>
+
+  <section class="window" aria-label="TrackOps app preview">
+    <div class="titlebar"><span class="traffic" aria-hidden="true"><i></i><i></i><i></i></span>TrackOps</div>
+    <div class="window-body">
+      <div class="actions">
+        <button class="action" data-action="OPEN_ID3"><strong>ID3 Sanitizer</strong><span>Remove “(Original Mix)” from MP3 titles</span></button>
+        <button class="action" data-action="OPEN_PLAYLIST"><strong>Format Playlist</strong><span>Show titles from an M3U playlist</span></button>
+      </div>
+      <section class="panel" id="result" aria-live="polite"></section>
+    </div>
+  </section>
+
+  <div class="review">
+    <section class="card">
+      <h2>Current state</h2>
+      <dl class="state" id="state"></dl>
+      <p class="caption" id="last-action"></p>
+      <h2>Try any outcome</h2>
+      <div class="choices" id="free-play"></div>
+    </section>
+    <section class="card">
+      <h2>Walkthroughs</h2>
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <p id="scenario-description"></p>
+      <div id="steps"></div>
+      <p class="caption">Starting a walkthrough resets the preview. Use the buttons in order, or explore freely.</p>
+    </section>
+  </div>
+</main>
+<script>
+  // Portable interaction model. UI and clipboard handling below are demo-only.
+  const initialState = () => ({ tool: "none", phase: "idle", selection: "none", titles: [], outputFile: "", summary: "", error: "", previous: null });
+
+  function transition(state, action) {
+    switch (action) {
+      case "OPEN_ID3": return { ...initialState(), tool: "ID3 Sanitizer", phase: "choose source" };
+      case "OPEN_PLAYLIST": return { ...initialState(), tool: "Format Playlist", phase: "choose playlist", previous: state.tool === "Format Playlist" && state.phase !== "choose playlist" ? { ...state, previous: null } : null };
+      case "CHOOSE_FILES":
+        if (state.phase !== "choose source") return state;
+        return { ...state, phase: "processing", selection: "2 MP3 files" };
+      case "CHOOSE_FOLDER":
+        if (state.phase !== "choose source") return state;
+        return { ...state, phase: "processing", selection: "Music folder" };
+      case "FINISH_ID3":
+        if (state.phase !== "processing") return state;
+        return { ...state, phase: "result", summary: state.selection === "2 MP3 files" ? "Updated 1 · Unchanged 1 · Failed 0" : "Updated 3 · Unchanged 2 · Failed 0" };
+      case "ID3_ERROR":
+        if (state.phase !== "processing") return state;
+        return { ...state, phase: "error", error: "2 files failed. 1 file updated before the error; changes already made remain saved." };
+      case "ID3_CANCELLED":
+        if (state.phase !== "processing") return state;
+        return { ...state, phase: "result", summary: "Stopped after 2 files · Updated 1 · Unchanged 1 · Failed 0. Earlier changes remain saved." };
+      case "PLAYLIST_TITLES":
+        if (state.phase !== "choose playlist") return state;
+        return { ...state, phase: "result", selection: "set.m3u8", titles: ["A Place to Start", "Night Drive, Pt. 2", "Über den Wolken"], outputFile: "set-titles.txt", previous: null };
+      case "PLAYLIST_EMPTY":
+        if (state.phase !== "choose playlist") return state;
+        return { ...state, phase: "empty", selection: "empty.m3u8", outputFile: "empty-titles.txt", previous: null };
+      case "PLAYLIST_ERROR":
+        if (state.phase !== "choose playlist") return state;
+        return { ...state, phase: "error", selection: "broken.m3u8", error: "Could not read this playlist. Choose another file.", previous: null };
+      case "PLAYLIST_WRITE_ERROR":
+        if (state.phase !== "choose playlist") return state;
+        return { ...state, phase: "write error", selection: "readonly.m3u8", titles: ["A Place to Start", "Night Drive, Pt. 2"], error: "Could not save readonly-titles.txt beside the playlist. Titles are still available below to copy.", previous: null };
+      case "CANCEL":
+        if (state.phase !== "choose source" && state.phase !== "choose playlist") return state;
+        return state.previous || initialState();
+      default: return state;
+    }
+  }
+</script>
+<script>
+  const labels = {
+    OPEN_ID3: "ID3 Sanitizer", OPEN_PLAYLIST: "Format Playlist", CHOOSE_FILES: "Choose MP3 files",
+    CHOOSE_FOLDER: "Choose a folder", FINISH_ID3: "Finish processing", ID3_ERROR: "Finish with failed files", ID3_CANCELLED: "Stop processing", PLAYLIST_TITLES: "Playlist with titles",
+    PLAYLIST_EMPTY: "Empty playlist", PLAYLIST_ERROR: "Unreadable playlist", PLAYLIST_WRITE_ERROR: "Cannot save output file", CANCEL: "Cancel chooser"
+  };
+  const scenarios = [
+    { name: "ID3 files", description: "Choose MP3 files and review the saved changes.", actions: ["OPEN_ID3", "CHOOSE_FILES", "FINISH_ID3"] },
+    { name: "ID3 stop", description: "Start a folder batch, then stop between files. Earlier edits remain saved.", actions: ["OPEN_ID3", "CHOOSE_FOLDER", "ID3_CANCELLED"] },
+    { name: "ID3 folder error", description: "Choose a folder. Some files fail; prior changes remain saved.", actions: ["OPEN_ID3", "CHOOSE_FOLDER", "ID3_ERROR"] },
+    { name: "Playlist & Copy", description: "Open a playlist, see titles in the window, then copy them.", actions: ["OPEN_PLAYLIST", "PLAYLIST_TITLES", "COPY"] },
+    { name: "Cancel / empty", description: "Cancel a chooser, then open a playlist with no titles.", actions: ["OPEN_PLAYLIST", "CANCEL", "OPEN_PLAYLIST", "PLAYLIST_EMPTY"] },
+    { name: "Read error", description: "Open a playlist the app cannot read, then try another.", actions: ["OPEN_PLAYLIST", "PLAYLIST_ERROR", "OPEN_PLAYLIST", "PLAYLIST_TITLES"] },
+    { name: "Save error", description: "Read a playlist, but fail to save its text file. Titles remain available to copy.", actions: ["OPEN_PLAYLIST", "PLAYLIST_WRITE_ERROR", "COPY"] }
+  ];
+  let state = initialState();
+  let activeScenario = 0;
+  let nextStep = 0;
+  let lastAction = "Ready";
+
+  function button(action, label = labels[action], secondary = true) {
+    return `<button class="button${secondary ? " secondary" : ""}" data-action="${action}">${label}</button>`;
+  }
+
+  function render() {
+    const result = document.getElementById("result");
+    if (state.phase === "idle") {
+      result.innerHTML = `<h2>Ready</h2><p class="muted">Choose a tool above to begin.</p>`;
+    } else if (state.phase === "choose source") {
+      result.innerHTML = `<h2>ID3 Sanitizer</h2><p>Choose MP3 files or a folder. Processing starts as soon as you select them, and edits are saved to the original files.</p><div class="choices">${button("CHOOSE_FILES", "Files…", false)}${button("CHOOSE_FOLDER", "Folder…")}${button("CANCEL", "Cancel")}</div><p class="caption">These buttons simulate the native file and folder choosers.</p>`;
+    } else if (state.phase === "choose playlist") {
+      result.innerHTML = `<h2>Format Playlist</h2><p>Choose an M3U playlist. TrackOps immediately saves a text file beside it and shows the same titles here.</p><div class="choices">${button("PLAYLIST_TITLES", "Open playlist…", false)}${button("CANCEL", "Cancel")}</div><p class="caption">The picker and file write are simulated. Use the review controls below for empty and error outcomes.</p>`;
+    } else if (state.phase === "processing") {
+      result.innerHTML = `<h2>Processing ${state.selection}</h2><p>2 files processed so far. Stop takes effect between files; completed edits stay saved.</p><div class="choices">${button("FINISH_ID3", "Finish processing", false)}${button("ID3_CANCELLED", "Stop")}</div><p class="caption">Progress and completion are simulated.</p>`;
+    } else if (state.tool === "ID3 Sanitizer") {
+      result.innerHTML = `<h2>ID3 result</h2><p class="muted">${state.selection}</p><div class="notice${state.error ? " error" : ""}">${state.error || state.summary}</div><p class="caption">Select ID3 Sanitizer again to process another batch.</p>`;
+    } else if (state.phase === "empty") {
+      result.innerHTML = `<h2>No titles found</h2><p class="muted">${state.selection} has no #EXTINF titles to show. Saved an empty ${state.outputFile} beside the playlist.</p>${button("OPEN_PLAYLIST", "Choose another playlist…", false)}`;
+    } else if (state.phase === "error") {
+      result.innerHTML = `<h2>Could not open playlist</h2><div class="notice error">${state.error}</div>${button("OPEN_PLAYLIST", "Choose another playlist…", false)}`;
+    } else {
+      const items = state.titles.map(title => `<li>${title}</li>`).join("");
+      const outputStatus = state.error ? `<div class="notice error">${state.error}</div>` : `<div class="notice">Saved ${state.outputFile} beside the playlist.</div>`;
+      result.innerHTML = `<div class="row"><div><h2>Playlist titles</h2><span class="muted">${state.selection} · ${state.titles.length} titles</span></div>${button("COPY", "Copy titles", false)}</div>${outputStatus}<ol class="titles">${items}</ol>${button("OPEN_PLAYLIST", "Choose another playlist…")}`;
+    }
+
+    const fields = [["Tool", state.tool], ["Stage", state.phase], ["Selection", state.selection], ["Titles", String(state.titles.length)], ["Output file", state.outputFile || "—"], ["Summary", state.summary || "—"], ["Error", state.error || "—"]];
+    document.getElementById("state").innerHTML = fields.map(([name, value]) => `<dt>${name}</dt><dd>${value}</dd>`).join("");
+    document.getElementById("last-action").textContent = `Last action: ${lastAction}`;
+    document.getElementById("free-play").innerHTML = Object.entries(labels).map(([action, label]) => button(action, label)).join("");
+    document.getElementById("tabs").innerHTML = scenarios.map((scenario, index) => `<button class="tab" role="tab" aria-selected="${index === activeScenario}" data-scenario="${index}">${scenario.name}</button>`).join("");
+    const scenario = scenarios[activeScenario];
+    document.getElementById("scenario-description").textContent = scenario.description;
+    document.getElementById("steps").innerHTML = scenario.actions.map((action, index) => `<button class="button secondary step${index < nextStep ? " done" : ""}" data-step="${index}" ${index !== nextStep ? "disabled" : ""}>${index + 1}. ${labels[action] || "Copy titles"}</button>`).join("");
+  }
+
+  async function dispatch(action) {
+    if (action === "COPY") {
+      if (state.titles.length === 0) { lastAction = "Nothing to copy"; render(); return; }
+      const titles = state.titles.join("\n");
+      try {
+        if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(titles);
+        else {
+          const temporary = document.createElement("textarea");
+          temporary.value = titles;
+          document.body.appendChild(temporary);
+          temporary.select();
+          if (!document.execCommand("copy")) throw new Error("Copy unavailable");
+          temporary.remove();
+        }
+        lastAction = "Copied titles, one per line";
+      } catch { lastAction = "Copy unavailable in this browser"; }
+    } else {
+      const next = transition(state, action);
+      lastAction = next === state ? `${labels[action]} is unavailable at this stage` : labels[action];
+      state = next;
+    }
+    render();
+  }
+
+  document.addEventListener("click", async event => {
+    const scenarioButton = event.target.closest("[data-scenario]");
+    if (scenarioButton) {
+      activeScenario = Number(scenarioButton.dataset.scenario);
+      nextStep = 0;
+      state = initialState();
+      lastAction = `Started ${scenarios[activeScenario].name}`;
+      render();
+      return;
+    }
+    const stepButton = event.target.closest("[data-step]");
+    if (stepButton) {
+      const index = Number(stepButton.dataset.step);
+      if (index !== nextStep) return;
+      await dispatch(scenarios[activeScenario].actions[index]);
+      nextStep++;
+      render();
+      return;
+    }
+    const actionButton = event.target.closest("[data-action]");
+    if (actionButton) await dispatch(actionButton.dataset.action);
+  });
+  render();
+</script>
+</body>
+</html>
