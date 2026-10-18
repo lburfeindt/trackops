@@ -7,6 +7,21 @@
 - This repository contains independent tools. Check the tool's README before changing it; avoid assuming one language or workflow applies to every tool.
 - From the repository root, `make format`, `make lint`, `make test`, `make verify`, and `make build` run the registered tools' corresponding targets. Tool-specific instructions may define additional requirements.
 - Keep commit messages and pull request descriptions short (one to three lines).
+- Use [docs/README.md](docs/README.md) to find lasting documentation.
+
+## Agent skills
+
+### Issue tracker
+
+Work tickets live in GitHub Issues. See [issue tracker guidance](docs/agents/issue-tracker.md).
+
+### Triage labels
+
+Use the five default triage labels. See [triage labels](docs/agents/triage-labels.md).
+
+### Domain docs
+
+Use one root `CONTEXT.md` and `docs/adr/`. See [domain guidance](docs/agents/domain.md).
 
 ## Agent workflow
 
@@ -22,13 +37,6 @@ When making code changes or adding new functionality, always follow this workflo
     - Run specific tests related to your changes: `go test ./package/path -run TestSpecificFunction -v`
     - Run all tests to ensure full compatibility: `make test`
 
-When using Superpowers:
-
-1. Brainstorm/design → `.agentic/superpowers/specs/`
-2. After design approval → `.agentic/superpowers/plans/`
-3. Execute the plan using the Superpowers workflow.
-4. Keep implementation artifacts in the locations required by the active
-   Superpowers skill.
-5. Never put planning artifacts in the repository root.
+For agent planning, use one tracked `.scratch/<feature-or-epic>/` directory per feature or epic. Keep specs, plans, and progress notes there, including Superpowers artifacts. Update paths in these files when moving them. The user clears completed scratch folders manually. Move lasting decisions into `docs/adr/`; keep a full design in `docs/design/` only when it remains useful.
 
 **IMPORTANT**: Never consider a code change complete until all tests pass successfully and the code has been formatted and linted properly. Always verify your changes with the appropriate tests before finishing.
