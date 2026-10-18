@@ -37,6 +37,6 @@ When making code changes or adding new functionality, always follow this workflo
     - Run specific tests related to your changes: `go test ./package/path -run TestSpecificFunction -v`
     - Run all tests to ensure full compatibility: `make test`
 
-For agent planning, use one tracked `.scratch/<feature-or-epic>/` directory per feature or epic. Keep specs, plans, and progress notes there, including Superpowers artifacts. Update paths in these files when moving them. The user clears completed scratch folders manually. Move lasting decisions into `docs/adr/`; keep a full design in `docs/design/` only when it remains useful.
+For each feature or epic, keep temporary descriptions, design drafts, specs, plans, task instructions, progress notes, and Superpowers artifacts in one tracked `.scratch/<feature-or-epic>/` directory. Update links when moving files; the user clears completed scratch folders manually. Reserve `docs/` for lasting project guidance and validated outcomes: record lasting decisions in `docs/adr/`, and keep a full design in `docs/design/` only when it remains useful after the work is done.
 
 **IMPORTANT**: Never consider a code change complete until all tests pass successfully and the code has been formatted and linted properly. Always verify your changes with the appropriate tests before finishing.
