@@ -7,8 +7,21 @@
 - This repository contains independent tools. Check the tool's README before changing it; avoid assuming one language or workflow applies to every tool.
 - From the repository root, `make format`, `make lint`, `make test`, `make verify`, and `make build` run the registered tools' corresponding targets. Tool-specific instructions may define additional requirements.
 - Keep commit messages and pull request descriptions short (one to three lines).
-- Read [CONTEXT.md](CONTEXT.md) and relevant ADRs in `docs/adr/` before changing domain behavior. Add terms to the shared glossary when they are resolved; record lasting architectural decisions as concise ADRs.
 - Use [docs/README.md](docs/README.md) to find lasting documentation.
+
+## Agent skills
+
+### Issue tracker
+
+Work tickets live in GitHub Issues. See [issue tracker guidance](docs/agents/issue-tracker.md).
+
+### Triage labels
+
+Use the five default triage labels. See [triage labels](docs/agents/triage-labels.md).
+
+### Domain docs
+
+Use one root `CONTEXT.md` and `docs/adr/`. See [domain guidance](docs/agents/domain.md).
 
 ## Agent workflow
 
