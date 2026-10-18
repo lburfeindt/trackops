@@ -1,6 +1,6 @@
 # First TrackOps window
 
-Approved interaction flow for [issue #21](https://github.com/lburfeindt/trackops/issues/21). The [clickable prototype](https://github.com/lburfeindt/trackops/blob/lb/trackops-window-prototype/.scratch/trackops-app/window-prototype.html) is the primary source for review; it is simulated and does not ship with the app.
+Approved interaction flow for [issue #21](https://github.com/lburfeindt/trackops/issues/21). The [clickable prototype](../../.scratch/trackops-app/window-prototype.html) is kept with this decision for review; it is simulated and does not ship with the app.
 
 The small window has two buttons: **ID3 Sanitizer** and **Format Playlist**.
 
