@@ -14,9 +14,14 @@
         <p>Music library tools</p>
       </header>
       <nav aria-label="Tools">
-        <button type="button" disabled title="Available soon">ID3 Sanitizer</button>
+        <button type="button" id="sanitize-mp3">ID3 Sanitizer</button>
         <button type="button" id="open-playlist">Format Playlist</button>
       </nav>
+      <section aria-labelledby="sanitize-heading">
+        <h2 id="sanitize-heading">ID3 Sanitizer</h2>
+        <p id="sanitize-status" role="status" aria-live="polite">Choose MP3 files to remove the (Original Mix) title suffix.</p>
+        <ul id="sanitize-errors"></ul>
+      </section>
       <section aria-labelledby="playlist-heading">
         <h2 id="playlist-heading">Playlist titles</h2>
         <p id="playlist-status" role="status" aria-live="polite">Choose a playlist to see its titles.</p>

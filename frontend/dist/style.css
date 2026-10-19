@@ -12,6 +12,9 @@ nav { display: flex; gap: 12px; margin-bottom: 28px; }
 button { padding: 10px 16px; font: inherit; cursor: pointer; }
 button:disabled { cursor: default; }
 section { border-top: 1px solid #ddd; padding-top: 18px; }
+section + section { margin-top: 24px; }
 h2 { margin: 0 0 10px; font-size: 18px; }
 #playlist-status { color: #555; margin: 0 0 12px; }
 #titles { margin: 12px 0 0; padding-left: 24px; line-height: 1.6; }
+#sanitize-status { color: #555; margin: 0 0 12px; }
+#sanitize-errors { margin: 0; padding-left: 24px; line-height: 1.6; }
