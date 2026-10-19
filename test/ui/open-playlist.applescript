@@ -11,12 +11,16 @@ on run arguments
 			end repeat
 
 			set openButton to missing value
-			set windowElements to get entire contents of window "TrackOps"
-			repeat with element in windowElements
-				if role of element is "AXButton" and name of element is "Format Playlist" then
-					set openButton to element
-					exit repeat
-				end if
+			repeat 30 times
+				set windowElements to get entire contents of window "TrackOps"
+				repeat with element in windowElements
+					if role of element is "AXButton" and name of element is "Format Playlist" then
+						set openButton to element
+						exit repeat
+					end if
+				end repeat
+				if openButton is not missing value then exit repeat
+				delay 0.2
 			end repeat
 			if openButton is missing value then error "Format Playlist button is missing"
 

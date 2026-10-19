@@ -14,4 +14,4 @@ button:disabled { cursor: default; }
 section { border-top: 1px solid #ddd; padding-top: 18px; }
 h2 { margin: 0 0 10px; font-size: 18px; }
 #playlist-status { color: #555; margin: 0 0 12px; }
-#titles { margin: 0; padding-left: 24px; line-height: 1.6; }
+#titles { margin: 12px 0 0; padding-left: 24px; line-height: 1.6; }

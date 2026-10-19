@@ -18,7 +18,7 @@ make verify
 make build
 ```
 
-`make build` creates `build/bin/TrackOps.app` on macOS. `make test-ui` builds it and runs the native playlist picker test. UI automation requires Accessibility access for the terminal running the test.
+`make build` creates `build/bin/TrackOps.app` on macOS. `make test-ui` builds it and runs the playlist UI tests. UI automation requires Accessibility access for the terminal running the test.
 
 Run `make clean` to remove build outputs and clear Go's downloaded-module, build, and test-result caches. These caches are shared with other Go projects. Then run `make test` to download pinned dependencies again and rerun tests. Run `make build` to recreate the app and remaining CLI.
 
