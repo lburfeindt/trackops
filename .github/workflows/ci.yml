@@ -8,12 +8,14 @@ permissions:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
-          go-version-file: tools/format-playlist/go.mod
-          cache-dependency-path: tools/*/go.sum
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            tools/*/go.sum
       - run: make verify
       - run: make build
