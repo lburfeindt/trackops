@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"path/filepath"
 	"strings"
 
@@ -11,7 +12,9 @@ import (
 )
 
 type App struct {
-	context context.Context
+	context      context.Context
+	playlistPath string
+	titles       []string
 }
 
 type PlaylistResult struct {
@@ -19,6 +22,11 @@ type PlaylistResult struct {
 	Titles    []string `json:"titles"`
 	Error     string   `json:"error"`
 	Cancelled bool     `json:"cancelled"`
+}
+
+type SaveResult struct {
+	Exists bool   `json:"exists"`
+	Error  string `json:"error"`
 }
 
 type SanitizeFailure struct {
@@ -47,6 +55,8 @@ func (app *App) OpenPlaylist() PlaylistResult {
 		}},
 	})
 	if err != nil {
+		app.playlistPath = ""
+		app.titles = nil
 		return PlaylistResult{Error: err.Error()}
 	}
 	if path == "" {
@@ -55,9 +65,27 @@ func (app *App) OpenPlaylist() PlaylistResult {
 
 	titles, err := playlist.Open(path)
 	if err != nil {
+		app.playlistPath = ""
+		app.titles = nil
 		return PlaylistResult{Name: filepath.Base(path), Error: err.Error()}
 	}
+	app.playlistPath = path
+	app.titles = titles
 	return PlaylistResult{Name: filepath.Base(path), Titles: titles}
+}
+
+func (app *App) SaveTitles(replace bool) SaveResult {
+	if app.playlistPath == "" {
+		return SaveResult{Error: "No playlist selected"}
+	}
+	err := playlist.SaveTitles(app.playlistPath, app.titles, replace)
+	if errors.Is(err, playlist.ErrOutputExists) {
+		return SaveResult{Exists: true}
+	}
+	if err != nil {
+		return SaveResult{Error: err.Error()}
+	}
+	return SaveResult{}
 }
 
 func (app *App) CopyTitles(titles []string) error {

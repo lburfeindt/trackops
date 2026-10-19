@@ -15,6 +15,9 @@ section { border-top: 1px solid #ddd; padding-top: 18px; }
 section + section { margin-top: 24px; }
 h2 { margin: 0 0 10px; font-size: 18px; }
 #playlist-status { color: #555; margin: 0 0 12px; }
+#save-status { color: #555; margin: 12px 0; }
+#replace-choice p { margin: 8px 0; }
+[hidden] { display: none !important; }
 #titles { margin: 12px 0 0; padding-left: 24px; line-height: 1.6; }
 #sanitize-status { color: #555; margin: 0 0 12px; }
 #sanitize-errors { margin: 0; padding-left: 24px; line-height: 1.6; }
