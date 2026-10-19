@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"path/filepath"
+	"strings"
 
 	"github.com/lburfeindt/trackops/internal/playlist"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -43,4 +44,8 @@ func (app *App) OpenPlaylist() PlaylistResult {
 		return PlaylistResult{Name: filepath.Base(path), Error: err.Error()}
 	}
 	return PlaylistResult{Name: filepath.Base(path), Titles: titles}
+}
+
+func (app *App) CopyTitles(titles []string) error {
+	return runtime.ClipboardSetText(app.context, strings.Join(titles, "\n"))
 }

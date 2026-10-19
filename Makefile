@@ -23,6 +23,7 @@ build:
 
 test-ui: build
 	./test/ui/open-playlist.sh
+	./test/ui/playlist-states.sh
 
 clean:
 	@set -e; for tool in $(TOOLS); do $(MAKE) -C "$$tool" $@; done

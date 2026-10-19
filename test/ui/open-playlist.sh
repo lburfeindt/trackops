@@ -11,6 +11,8 @@ playlist_path="$test_directory/$playlist_name"
 cp "$playlist_fixture" "$playlist_path"
 
 # When
+pkill -x TrackOps || true
+sleep 1
 open -a "$project_root/build/bin/TrackOps.app"
 osascript "$project_root/test/ui/open-playlist.applescript" "$playlist_path" "$playlist_name"
 
