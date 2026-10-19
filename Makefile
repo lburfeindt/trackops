@@ -26,6 +26,7 @@ test-ui: build
 	./test/ui/playlist-states.sh
 	./test/ui/save-playlist.sh
 	./test/ui/sanitize-mp3.sh
+	./test/ui/sanitize-folder.sh
 
 clean:
 	@set -e; for tool in $(TOOLS); do $(MAKE) -C "$$tool" $@; done

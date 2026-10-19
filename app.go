@@ -5,6 +5,7 @@ import (
 	"errors"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/lburfeindt/trackops/internal/playlist"
 	"github.com/lburfeindt/trackops/tools/id3-sanitizer/id3sanitizer"
@@ -15,6 +16,8 @@ type App struct {
 	context      context.Context
 	playlistPath string
 	titles       []string
+	sanitizeMu   sync.Mutex
+	cancelBatch  context.CancelFunc
 }
 
 type PlaylistResult struct {
@@ -40,6 +43,7 @@ type SanitizeResult struct {
 	Failures  []SanitizeFailure `json:"failures"`
 	Error     string            `json:"error"`
 	Cancelled bool              `json:"cancelled"`
+	Stopped   bool              `json:"stopped"`
 }
 
 func (app *App) startup(context context.Context) {
@@ -106,11 +110,51 @@ func (app *App) SanitizeMP3() SanitizeResult {
 	if len(paths) == 0 {
 		return SanitizeResult{Cancelled: true}
 	}
+	return app.sanitizePaths(paths)
+}
+
+func (app *App) SanitizeFolder() SanitizeResult {
+	path, err := runtime.OpenDirectoryDialog(app.context, runtime.OpenDialogOptions{
+		Title: "Choose an MP3 folder to sanitize",
+	})
+	if err != nil {
+		return SanitizeResult{Error: err.Error()}
+	}
+	if path == "" {
+		return SanitizeResult{Cancelled: true}
+	}
+	return app.sanitizePaths([]string{path})
+}
+
+func (app *App) StopSanitize() {
+	app.sanitizeMu.Lock()
+	defer app.sanitizeMu.Unlock()
+	if app.cancelBatch != nil {
+		app.cancelBatch()
+	}
+}
+
+func (app *App) sanitizePaths(paths []string) SanitizeResult {
+	app.sanitizeMu.Lock()
+	if app.cancelBatch != nil {
+		app.sanitizeMu.Unlock()
+		return SanitizeResult{Error: "Sanitizer is already running"}
+	}
+	ctx, cancel := context.WithCancel(app.context)
+	app.cancelBatch = cancel
+	app.sanitizeMu.Unlock()
+	defer func() {
+		app.sanitizeMu.Lock()
+		app.cancelBatch = nil
+		app.sanitizeMu.Unlock()
+		cancel()
+	}()
+
 	runtime.EventsEmit(app.context, "sanitize-progress", "Preparing selected files…")
-	result := id3sanitizer.Run(app.context, paths, func(path string) {
+	result := id3sanitizer.Run(ctx, paths, func(path string) {
 		runtime.EventsEmit(app.context, "sanitize-progress", "Sanitizing: "+filepath.Base(path))
 	})
-	response := SanitizeResult{Updated: result.Updated, Unchanged: result.Unchanged, Failures: []SanitizeFailure{}}
+	response := SanitizeResult{Updated: result.Updated, Unchanged: result.Unchanged, Failures: []SanitizeFailure{}, Stopped: result.Canceled}
 	for _, failure := range result.Failures {
 		response.Failures = append(response.Failures, SanitizeFailure{
 			Name: filepath.Base(failure.Path), Error: failure.Err.Error(),

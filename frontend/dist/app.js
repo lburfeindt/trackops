@@ -8,18 +8,28 @@ const cancelReplaceButton = document.getElementById("cancel-replace");
 const status = document.getElementById("playlist-status");
 const titleList = document.getElementById("titles");
 const sanitizeButton = document.getElementById("sanitize-mp3");
+const sanitizeFolderButton = document.getElementById("sanitize-folder");
+const stopSanitizeButton = document.getElementById("stop-sanitize");
 const sanitizeStatus = document.getElementById("sanitize-status");
 const sanitizeErrors = document.getElementById("sanitize-errors");
 let currentTitles = [];
+let sanitizeRunning = false;
+let stopRequested = false;
 
 window.runtime.EventsOn("sanitize-progress", (message) => {
-  sanitizeStatus.textContent = message;
+  if (!sanitizeRunning) return;
+  stopSanitizeButton.hidden = false;
+  sanitizeErrors.replaceChildren();
+  if (!stopRequested) sanitizeStatus.textContent = message;
 });
 
-sanitizeButton.addEventListener("click", async () => {
+async function runSanitize(selectAndRun) {
+  sanitizeRunning = true;
+  stopRequested = false;
   sanitizeButton.disabled = true;
+  sanitizeFolderButton.disabled = true;
   try {
-    const result = await window.go.main.App.SanitizeMP3();
+    const result = await selectAndRun();
     if (result.cancelled) return;
     sanitizeErrors.replaceChildren();
     if (result.error) {
@@ -27,7 +37,12 @@ sanitizeButton.addEventListener("click", async () => {
       return;
     }
     const failures = result.failures ?? [];
-    sanitizeStatus.textContent = `Updated: ${result.updated} · Unchanged: ${result.unchanged} · Failed: ${failures.length}`;
+    if (!result.stopped && result.updated + result.unchanged + failures.length === 0) {
+      sanitizeStatus.textContent = "No MP3 files found.";
+    } else {
+      const prefix = result.stopped ? "Stopped · " : "";
+      sanitizeStatus.textContent = `${prefix}Updated: ${result.updated} · Unchanged: ${result.unchanged} · Failed: ${failures.length}`;
+    }
     for (const failure of failures.slice(0, 10)) {
       const item = document.createElement("li");
       item.textContent = `${failure.name}: ${failure.error}`;
@@ -41,7 +56,24 @@ sanitizeButton.addEventListener("click", async () => {
   } catch (error) {
     sanitizeStatus.textContent = String(error);
   } finally {
+    sanitizeRunning = false;
     sanitizeButton.disabled = false;
+    sanitizeFolderButton.disabled = false;
+    stopSanitizeButton.hidden = true;
+    stopSanitizeButton.disabled = false;
+  }
+}
+
+sanitizeButton.addEventListener("click", () => runSanitize(() => window.go.main.App.SanitizeMP3()));
+sanitizeFolderButton.addEventListener("click", () => runSanitize(() => window.go.main.App.SanitizeFolder()));
+stopSanitizeButton.addEventListener("click", async () => {
+  stopRequested = true;
+  stopSanitizeButton.disabled = true;
+  sanitizeStatus.textContent = "Stopping after current file…";
+  try {
+    await window.go.main.App.StopSanitize();
+  } catch (error) {
+    sanitizeStatus.textContent = String(error);
   }
 });
 
