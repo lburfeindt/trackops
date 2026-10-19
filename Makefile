@@ -24,6 +24,7 @@ build:
 test-ui: build
 	./test/ui/open-playlist.sh
 	./test/ui/playlist-states.sh
+	./test/ui/save-playlist.sh
 	./test/ui/sanitize-mp3.sh
 
 clean:

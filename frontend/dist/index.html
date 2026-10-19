@@ -26,6 +26,13 @@
         <h2 id="playlist-heading">Playlist titles</h2>
         <p id="playlist-status" role="status" aria-live="polite">Choose a playlist to see its titles.</p>
         <button type="button" id="copy-titles" disabled>Copy titles</button>
+        <button type="button" id="save-titles" hidden>Save titles</button>
+        <p id="save-status" role="status" aria-live="polite"></p>
+        <div id="replace-choice" hidden>
+          <p>Replace existing output?</p>
+          <button type="button" id="replace-titles">Replace</button>
+          <button type="button" id="cancel-replace">Cancel</button>
+        </div>
         <ol id="titles"></ol>
       </section>
     </main>

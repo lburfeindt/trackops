@@ -1,5 +1,10 @@
 const openButton = document.getElementById("open-playlist");
 const copyButton = document.getElementById("copy-titles");
+const saveButton = document.getElementById("save-titles");
+const saveStatus = document.getElementById("save-status");
+const replaceChoice = document.getElementById("replace-choice");
+const replaceButton = document.getElementById("replace-titles");
+const cancelReplaceButton = document.getElementById("cancel-replace");
 const status = document.getElementById("playlist-status");
 const titleList = document.getElementById("titles");
 const sanitizeButton = document.getElementById("sanitize-mp3");
@@ -48,6 +53,33 @@ copyButton.addEventListener("click", async () => {
   }
 });
 
+async function saveTitles(replace) {
+  saveButton.disabled = true;
+  replaceButton.disabled = true;
+  try {
+    const result = await window.go.main.App.SaveTitles(replace);
+    if (result.exists) {
+      replaceChoice.hidden = false;
+      return;
+    }
+    replaceChoice.hidden = true;
+    saveStatus.textContent = result.error ? `Not saved: ${result.error}` : "Saved";
+  } catch (error) {
+    replaceChoice.hidden = true;
+    saveStatus.textContent = `Not saved: ${String(error)}`;
+  } finally {
+    saveButton.disabled = false;
+    replaceButton.disabled = false;
+  }
+}
+
+saveButton.addEventListener("click", () => saveTitles(false));
+replaceButton.addEventListener("click", () => saveTitles(true));
+cancelReplaceButton.addEventListener("click", () => {
+  replaceChoice.hidden = true;
+  saveStatus.textContent = "Not saved";
+});
+
 openButton.addEventListener("click", async () => {
   openButton.disabled = true;
   try {
@@ -57,6 +89,9 @@ openButton.addEventListener("click", async () => {
     titleList.replaceChildren();
     currentTitles = [];
     copyButton.disabled = true;
+    saveButton.hidden = true;
+    replaceChoice.hidden = true;
+    saveStatus.textContent = "";
     if (result.error) {
       status.textContent = result.error;
       return;
@@ -65,6 +100,8 @@ openButton.addEventListener("click", async () => {
     currentTitles = result.titles ?? [];
     status.textContent = currentTitles.length === 0 ? "No titles found" : result.name;
     copyButton.disabled = currentTitles.length === 0;
+    saveButton.hidden = false;
+    saveStatus.textContent = "Not saved";
     for (const title of currentTitles) {
       const item = document.createElement("li");
       item.textContent = title;
@@ -74,6 +111,9 @@ openButton.addEventListener("click", async () => {
     titleList.replaceChildren();
     currentTitles = [];
     copyButton.disabled = true;
+    saveButton.hidden = true;
+    replaceChoice.hidden = true;
+    saveStatus.textContent = "";
     status.textContent = String(error);
   } finally {
     openButton.disabled = false;
