@@ -55,6 +55,10 @@ func Run(ctx context.Context, paths []string, beforeFile func(string)) Result {
 			fail(path, fmt.Errorf("selection must be a regular file or directory"))
 			continue
 		}
+		if info.Mode().IsRegular() && !strings.EqualFold(filepath.Ext(absolute), ".mp3") {
+			fail(path, fmt.Errorf("selection must be an MP3 file"))
+			continue
+		}
 		err = filepath.WalkDir(absolute, func(current string, entry fs.DirEntry, walkErr error) error {
 			if ctx.Err() != nil {
 				return ctx.Err()

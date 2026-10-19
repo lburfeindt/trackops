@@ -116,6 +116,26 @@ func TestRun_DoesNotFollowSymlinks(t *testing.T) {
 	assert.Equal(t, 1, untouched.Updated)
 }
 
+func TestRun_UnsupportedSelectedFileFailsAndOtherFilesContinue(t *testing.T) {
+	// Given
+	directory := t.TempDir()
+	unsupported := copyTrack(t, directory, "audio.wav")
+	valid := copyTrack(t, directory, "valid.mp3")
+	before, err := os.ReadFile(unsupported)
+	require.NoError(t, err)
+
+	// When
+	result := Run(context.Background(), []string{unsupported, valid}, nil)
+
+	// Then
+	assert.Equal(t, 1, result.Updated)
+	require.Len(t, result.Failures, 1)
+	assert.Equal(t, unsupported, result.Failures[0].Path)
+	after, err := os.ReadFile(unsupported)
+	require.NoError(t, err)
+	assert.Equal(t, before, after)
+}
+
 func TestRun_EmptyOrCanceledSelection(t *testing.T) {
 	// Given
 	canceled, cancel := context.WithCancel(context.Background())
