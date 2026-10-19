@@ -93,6 +93,40 @@ func TestRun_CancellationLeavesRemainingFilesUntouched(t *testing.T) {
 	assert.Equal(t, 1, remaining.Unchanged)
 }
 
+func TestRun_FolderCancellationKeepsCompletedEdits(t *testing.T) {
+	// Given
+	directory := t.TempDir()
+	firstTrack := copyTrack(t, directory, "first.mp3")
+	nested := filepath.Join(directory, "z-album")
+	require.NoError(t, os.Mkdir(nested, 0o700))
+	remainingTrack := copyTrack(t, nested, "second.MP3")
+	remainingBefore, err := os.ReadFile(remainingTrack)
+	require.NoError(t, err)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// When
+	result := Run(ctx, []string{directory, firstTrack}, func(path string) {
+		if path == remainingTrack {
+			cancel()
+		}
+	})
+
+	// Then
+	assert.True(t, result.Canceled)
+	assert.Equal(t, 1, result.Updated)
+	assert.Zero(t, result.Unchanged)
+	assert.Empty(t, result.Failures)
+	remainingAfter, err := os.ReadFile(remainingTrack)
+	require.NoError(t, err)
+	assert.Equal(t, remainingBefore, remainingAfter)
+	firstAfter, err := os.ReadFile(firstTrack)
+	require.NoError(t, err)
+	tag, err := id3v2.ParseReader(bytes.NewReader(firstAfter), id3v2.Options{Parse: true})
+	require.NoError(t, err)
+	assert.Equal(t, "What a tune", tag.Title())
+}
+
 func TestRun_DoesNotFollowSymlinks(t *testing.T) {
 	// Given
 	outside := t.TempDir()
