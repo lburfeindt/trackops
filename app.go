@@ -97,13 +97,7 @@ func (app *App) CopyTitles(titles []string) error {
 }
 
 func (app *App) SanitizeMP3() SanitizeResult {
-	paths, err := runtime.OpenMultipleFilesDialog(app.context, runtime.OpenDialogOptions{
-		Title: "Choose MP3 files to sanitize",
-		Filters: []runtime.FileFilter{{
-			DisplayName: "MP3 files (*.mp3)",
-			Pattern:     "*.mp3;*.MP3",
-		}},
-	})
+	paths, err := selectMP3Inputs(app.context)
 	if err != nil {
 		return SanitizeResult{Error: err.Error()}
 	}
@@ -111,19 +105,6 @@ func (app *App) SanitizeMP3() SanitizeResult {
 		return SanitizeResult{Cancelled: true}
 	}
 	return app.sanitizePaths(paths)
-}
-
-func (app *App) SanitizeFolder() SanitizeResult {
-	path, err := runtime.OpenDirectoryDialog(app.context, runtime.OpenDialogOptions{
-		Title: "Choose an MP3 folder to sanitize",
-	})
-	if err != nil {
-		return SanitizeResult{Error: err.Error()}
-	}
-	if path == "" {
-		return SanitizeResult{Cancelled: true}
-	}
-	return app.sanitizePaths([]string{path})
 }
 
 func (app *App) StopSanitize() {

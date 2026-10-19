@@ -4,7 +4,7 @@ WAILS ?= go run github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
 .PHONY: test verify format lint build clean test-ui
 
 format:
-	gofmt -w main.go app.go internal/playlist
+	gofmt -w main.go app.go mp3_picker_*.go internal/playlist
 	@set -e; for tool in $(TOOLS); do $(MAKE) -C "$$tool" format; done
 
 lint:

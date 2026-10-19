@@ -5,6 +5,7 @@ on run arguments
 	set stopFolderPath to item 3 of arguments
 	set stopStatusPath to item 4 of arguments
 	tell application "TrackOps" to activate
+	my assertButtonAbsent("MP3 folder")
 
 	-- When
 	my chooseFolder(folderPath)
@@ -35,6 +36,15 @@ on clickButton(buttonName)
 	end tell
 end clickButton
 
+on assertButtonAbsent(buttonName)
+	tell application "System Events" to tell process "TrackOps"
+		set windowElements to get entire contents of window "TrackOps"
+		repeat with element in windowElements
+			if role of element is "AXButton" and name of element is buttonName then error buttonName & " is still visible"
+		end repeat
+	end tell
+end assertButtonAbsent
+
 on findButton(buttonName)
 	tell application "System Events" to tell process "TrackOps"
 		repeat 50 times
@@ -49,7 +59,7 @@ on findButton(buttonName)
 end findButton
 
 on chooseFolder(folderPath)
-	my clickButton("MP3 folder")
+	my clickButton("ID3 Sanitizer")
 	tell application "System Events" to tell process "TrackOps"
 		repeat 30 times
 			if exists sheet 1 of window "TrackOps" then exit repeat

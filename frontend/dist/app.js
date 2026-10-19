@@ -8,7 +8,6 @@ const cancelReplaceButton = document.getElementById("cancel-replace");
 const status = document.getElementById("playlist-status");
 const titleList = document.getElementById("titles");
 const sanitizeButton = document.getElementById("sanitize-mp3");
-const sanitizeFolderButton = document.getElementById("sanitize-folder");
 const stopSanitizeButton = document.getElementById("stop-sanitize");
 const sanitizeStatus = document.getElementById("sanitize-status");
 const sanitizeErrors = document.getElementById("sanitize-errors");
@@ -23,13 +22,12 @@ window.runtime.EventsOn("sanitize-progress", (message) => {
   if (!stopRequested) sanitizeStatus.textContent = message;
 });
 
-async function runSanitize(selectAndRun) {
+async function runSanitize() {
   sanitizeRunning = true;
   stopRequested = false;
   sanitizeButton.disabled = true;
-  sanitizeFolderButton.disabled = true;
   try {
-    const result = await selectAndRun();
+    const result = await window.go.main.App.SanitizeMP3();
     if (result.cancelled) return;
     sanitizeErrors.replaceChildren();
     if (result.error) {
@@ -58,14 +56,12 @@ async function runSanitize(selectAndRun) {
   } finally {
     sanitizeRunning = false;
     sanitizeButton.disabled = false;
-    sanitizeFolderButton.disabled = false;
     stopSanitizeButton.hidden = true;
     stopSanitizeButton.disabled = false;
   }
 }
 
-sanitizeButton.addEventListener("click", () => runSanitize(() => window.go.main.App.SanitizeMP3()));
-sanitizeFolderButton.addEventListener("click", () => runSanitize(() => window.go.main.App.SanitizeFolder()));
+sanitizeButton.addEventListener("click", runSanitize);
 stopSanitizeButton.addEventListener("click", async () => {
   stopRequested = true;
   stopSanitizeButton.disabled = true;
