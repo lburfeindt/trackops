@@ -1,16 +1,21 @@
 #!/bin/sh
 set -eu
 
+# Given
 project_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 test_directory=$(mktemp -d)
 trap 'rm -rf "$test_directory"' EXIT
 playlist_fixture="$project_root/internal/playlist/testdata/playlist.m3u8"
-cp "$playlist_fixture" "$test_directory/Set.m3u8"
+playlist_name="Set-$$.m3u8"
+playlist_path="$test_directory/$playlist_name"
+cp "$playlist_fixture" "$playlist_path"
 
+# When
 open -a "$project_root/build/bin/TrackOps.app"
-osascript "$project_root/test/ui/open-playlist.applescript" "$test_directory/Set.m3u8"
+osascript "$project_root/test/ui/open-playlist.applescript" "$playlist_path" "$playlist_name"
 
-if ! cmp -s "$playlist_fixture" "$test_directory/Set.m3u8"; then
+# Then
+if ! cmp -s "$playlist_fixture" "$playlist_path"; then
 	printf '%s\n' 'Opening a playlist changed the source file' >&2
 	exit 1
 fi
