@@ -6,7 +6,7 @@ See [documentation](docs/README.md) for shared terms and lasting project decisio
 
 ## Development
 
-Requires Make, Go 1.27.1 or later, and [Wails v2](https://v2.wails.io/docs/gettingstarted/installation/) for the TrackOps app. The existing tool commands remain available while their features move into the app.
+Requires Make and Go 1.27.1 or later. The build runs the pinned Wails CLI through Go. The existing tool commands remain available while their features move into the app.
 
 Run the registered tools' lifecycle from the repository root:
 

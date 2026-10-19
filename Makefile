@@ -1,5 +1,5 @@
 TOOLS := tools/format-playlist tools/id3-sanitizer
-WAILS ?= wails
+WAILS ?= go run github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
 
 .PHONY: test verify format lint build clean test-ui
 
