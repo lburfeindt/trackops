@@ -27,7 +27,7 @@ async function runSanitize() {
   stopRequested = false;
   sanitizeButton.disabled = true;
   try {
-    const result = await window.go.main.App.SanitizeMP3();
+    const result = await window.go.desktop.App.SanitizeMP3();
     if (result.cancelled) return;
     sanitizeErrors.replaceChildren();
     if (result.error) {
@@ -67,7 +67,7 @@ stopSanitizeButton.addEventListener("click", async () => {
   stopSanitizeButton.disabled = true;
   sanitizeStatus.textContent = "Stopping after current file…";
   try {
-    await window.go.main.App.StopSanitize();
+    await window.go.desktop.App.StopSanitize();
   } catch (error) {
     sanitizeStatus.textContent = String(error);
   }
@@ -75,7 +75,7 @@ stopSanitizeButton.addEventListener("click", async () => {
 
 copyButton.addEventListener("click", async () => {
   try {
-    await window.go.main.App.CopyTitles(currentTitles);
+    await window.go.desktop.App.CopyTitles(currentTitles);
   } catch (error) {
     status.textContent = String(error);
   }
@@ -85,7 +85,7 @@ async function saveTitles(replace) {
   saveButton.disabled = true;
   replaceButton.disabled = true;
   try {
-    const result = await window.go.main.App.SaveTitles(replace);
+    const result = await window.go.desktop.App.SaveTitles(replace);
     if (result.exists) {
       replaceChoice.hidden = false;
       return;
@@ -111,7 +111,7 @@ cancelReplaceButton.addEventListener("click", () => {
 openButton.addEventListener("click", async () => {
   openButton.disabled = true;
   try {
-    const result = await window.go.main.App.OpenPlaylist();
+    const result = await window.go.desktop.App.OpenPlaylist();
     if (result.cancelled) return;
 
     titleList.replaceChildren();

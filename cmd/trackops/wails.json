@@ -2,7 +2,10 @@
   "version": "2",
   "name": "TrackOps",
   "outputfilename": "TrackOps",
-  "assetdir": "frontend/dist",
+  "assetdir": "../../frontend/dist",
+  "frontend:dir": "../../frontend",
+  "wailsjsdir": "../../frontend/wailsjs",
+  "build:dir": "../../build",
   "info": {
     "productName": "TrackOps",
     "productVersion": "0.1.0"
