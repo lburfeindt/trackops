@@ -1,8 +1,4 @@
 /.idea/
 .DS_Store
-/build/*
-!/build/appicon.png
-!/build/darwin/
-/build/darwin/*
-!/build/darwin/Info.plist
+/build/
 /frontend/wailsjs/

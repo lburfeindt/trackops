@@ -30,6 +30,6 @@ make verify
 make build
 ```
 
-`make build` makes a development app. `make test-ui` packages the app and runs the macOS UI suite, including native pickers and file assertions. Give the terminal running it Accessibility access. `make clean` removes `build/bin`.
+`make build` makes a development app. `make test-ui` packages the app and runs the macOS UI suite, including native pickers and file assertions. Give the terminal running it Accessibility access. `make clean` removes generated files in `build/`.
 
 See [documentation](docs/README.md) for project guidance and decisions.

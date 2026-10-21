@@ -1,5 +1,5 @@
 WAILS ?= go run github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
-.PHONY: test verify format lint build package-macos clean test-ui
+.PHONY: test verify format lint prepare-build build package-macos clean test-ui
 
 format:
 	gofmt -w main.go app.go mp3_picker_*.go internal/id3sanitizer internal/playlist
@@ -15,10 +15,15 @@ verify:
 	$(MAKE) lint
 	$(MAKE) test
 
-build:
+prepare-build:
+	mkdir -p build/darwin
+	cp packaging/macos/appicon.png build/appicon.png
+	cp packaging/macos/Info.plist build/darwin/Info.plist
+
+build: prepare-build
 	CGO_CFLAGS='-mmacosx-version-min=13.0' CGO_LDFLAGS='-framework UniformTypeIdentifiers -mmacosx-version-min=13.0' $(WAILS) build
 
-package-macos:
+package-macos: prepare-build
 	@test "$$(uname -s)" = Darwin || { echo 'package-macos requires macOS'; exit 1; }
 	CGO_CFLAGS='-mmacosx-version-min=13.0' CGO_LDFLAGS='-framework UniformTypeIdentifiers -mmacosx-version-min=13.0' $(WAILS) build -clean -platform darwin/arm64
 	codesign --force --deep --sign - build/bin/TrackOps.app
@@ -36,4 +41,4 @@ test-ui: package-macos
 	./test/ui/sanitize-folder.sh
 
 clean:
-	rm -rf build/bin
+	rm -rf build
