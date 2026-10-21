@@ -189,7 +189,7 @@ func TestRun_EmptyOrCanceledSelection(t *testing.T) {
 
 func copyTrack(t *testing.T, directory, name string) string {
 	t.Helper()
-	fixture, err := os.ReadFile("../../testdata/Silence.mp3")
+	fixture, err := os.ReadFile("../testdata/Silence.mp3")
 	require.NoError(t, err)
 	path := filepath.Join(directory, name)
 	require.NoError(t, os.WriteFile(path, fixture, 0o600))

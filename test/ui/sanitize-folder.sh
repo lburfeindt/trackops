@@ -5,7 +5,7 @@ set -eu
 project_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 test_directory=$(mktemp -d)
 trap 'rm -rf "$test_directory"' EXIT
-fixture="$project_root/tools/id3-sanitizer/testdata/Silence.mp3"
+fixture="$project_root/internal/id3sanitizer/testdata/Silence.mp3"
 folder="$test_directory/folder"
 empty_folder="$test_directory/empty"
 stop_folder="$test_directory/stop"
@@ -17,8 +17,7 @@ cp "$fixture" "$test_directory/outside/outside.mp3"
 ln -s "$test_directory/outside" "$folder/linked-album"
 printf 'ID3' > "$folder/album/broken.mp3"
 cp "$fixture" "$empty_folder/ignored.wav"
-cp "$fixture" "$test_directory/expected.mp3"
-"$project_root/tools/id3-sanitizer/bin/id3-sanitizer" "$test_directory/expected.mp3" >/dev/null
+cp "$project_root/internal/id3sanitizer/testdata/Silence-sanitized.mp3" "$test_directory/expected.mp3"
 cp "$fixture" "$stop_folder/0001.mp3"
 cp "$fixture" "$stop_folder/0002.mp3"
 cp "$fixture" "$stop_folder/0003.mp3"

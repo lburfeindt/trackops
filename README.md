@@ -1,14 +1,26 @@
-# Track Ops
+# TrackOps
 
-A small collection of independent vibe coded tools for chore tasks when working with music software like Rekordbox.
+TrackOps is one macOS app for two music chores:
 
-See [documentation](docs/README.md) for shared terms and lasting project decisions.
+- **ID3 Sanitizer** removes the exact `(Original Mix)` suffix from MP3 titles. Choose MP3 files or a folder; folder selection includes subfolders. The app shows progress, supports Stop between files, and reports updated, unchanged, and failed counts.
+- **Format Playlist** opens an M3U or M3U8 playlist and shows its `#EXTINF` titles in order. Copy them or use **Save titles** to write `<playlist-stem>-formatted.txt` beside the playlist. Existing output requires Replace or Cancel.
+
+The app edits selected MP3s in place. Saving playlist titles happens only when you choose **Save titles**.
+
+## Build and launch
+
+Requires Apple Silicon macOS 13 or later, Go 1.27.1 or later, Make, and the Xcode command line tools. The first build downloads the pinned Wails v2 CLI and Go dependencies.
+
+```sh
+make package-macos
+open build/bin/TrackOps.app
+```
+
+`package-macos` makes a clean Apple Silicon build at `build/bin/TrackOps.app` and signs it ad hoc for local use. To install it, copy the app to `/Applications`, then launch it from Finder or Spotlight. The app is for local use; it is not notarized for distribution.
 
 ## Development
 
-Requires Make and Go 1.27.1 or later. The build runs the pinned Wails CLI through Go. The existing tool commands remain available while their features move into the app.
-
-Run the registered tools' lifecycle from the repository root:
+The root Go module contains both headless features and the Wails app. Run the lifecycle from the repository root:
 
 ```sh
 make format
@@ -18,11 +30,6 @@ make verify
 make build
 ```
 
-`make build` creates `build/bin/TrackOps.app` on macOS. `make test-ui` builds it and runs the playlist and MP3 sanitizer UI tests. UI automation requires Accessibility access for the terminal running the test.
+`make build` makes a development app. `make test-ui` packages the app and runs the macOS UI suite, including native pickers and file assertions. Give the terminal running it Accessibility access. `make clean` removes `build/bin`.
 
-Run `make clean` to remove build outputs and clear Go's downloaded-module, build, and test-result caches. These caches are shared with other Go projects. Then run `make test` to download pinned dependencies again and rerun tests. Run `make build` to recreate the app and remaining CLI.
-
-## Tools
-
-- [format-playlist](tools/format-playlist/README.md) — prints track names from an M3U playlist's `#EXTINF` entries; the TrackOps app also shows them.
-- [id3-sanitizer](tools/id3-sanitizer/README.md) — removes `(Original Mix)` from MP3 title suffixes, in the TrackOps app or with the existing CLI and native file/folder chooser.
+See [documentation](docs/README.md) for project guidance and decisions.

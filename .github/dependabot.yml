@@ -1,9 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: gomod
-    directories:
-      - /tools/format-playlist
-      - /tools/id3-sanitizer
+    directory: /
     schedule:
       interval: monthly
     groups:
