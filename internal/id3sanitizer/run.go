@@ -8,8 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/lburfeindt/trackops/internal/id3sanitizer/sanitizer"
 )
 
 // Failure identifies an input that could not be read or sanitized.
@@ -87,7 +85,7 @@ func Run(ctx context.Context, paths []string, beforeFile func(string)) Result {
 		if ctx.Err() != nil {
 			break
 		}
-		changed, err := sanitizer.File(path)
+		changed, err := sanitizeFile(path)
 		switch {
 		case err != nil:
 			fail(path, err)

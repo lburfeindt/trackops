@@ -68,7 +68,7 @@ func (app *App) OpenPlaylist() PlaylistResult {
 		return PlaylistResult{Cancelled: true}
 	}
 
-	titles, err := playlist.Open(path)
+	titles, err := playlist.ReadTitles(path)
 	if err != nil {
 		app.playlistPath = ""
 		app.titles = nil

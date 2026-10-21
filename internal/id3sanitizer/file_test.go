@@ -1,4 +1,4 @@
-package sanitizer
+package id3sanitizer
 
 import (
 	"bytes"
@@ -13,15 +13,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFile_SanitizesFixtureAndPreservesAudioAndMetadata(t *testing.T) {
+func TestSanitizeFile_SanitizesFixtureAndPreservesAudioAndMetadata(t *testing.T) {
 	// Given
-	original, err := os.ReadFile("../testdata/Silence.mp3")
+	original, err := os.ReadFile("testdata/Silence.mp3")
 	require.NoError(t, err)
 	trackPath := writeTrack(t, original)
 	require.NoError(t, os.Chmod(trackPath, 0o640))
 
 	// When
-	changed, err := File(trackPath)
+	changed, err := sanitizeFile(trackPath)
 
 	// Then
 	require.NoError(t, err)
@@ -40,7 +40,7 @@ func TestFile_SanitizesFixtureAndPreservesAudioAndMetadata(t *testing.T) {
 	info, err := os.Stat(trackPath)
 	require.NoError(t, err)
 	assert.Equal(t, os.FileMode(0o640), info.Mode().Perm())
-	changed, err = File(trackPath)
+	changed, err = sanitizeFile(trackPath)
 	require.NoError(t, err)
 	assert.False(t, changed)
 	repeated, err := os.ReadFile(trackPath)
@@ -51,7 +51,7 @@ func TestFile_SanitizesFixtureAndPreservesAudioAndMetadata(t *testing.T) {
 	assert.Len(t, entries, 1)
 }
 
-func TestFile_TitleEncodingsAndMatching(t *testing.T) {
+func TestSanitizeFile_TitleEncodingsAndMatching(t *testing.T) {
 	tests := []struct {
 		name     string
 		version  byte
@@ -82,7 +82,7 @@ func TestFile_TitleEncodingsAndMatching(t *testing.T) {
 			require.NoError(t, err)
 
 			// When
-			changed, err := File(trackPath)
+			changed, err := sanitizeFile(trackPath)
 
 			// Then
 			require.NoError(t, err)
@@ -104,7 +104,7 @@ func TestFile_TitleEncodingsAndMatching(t *testing.T) {
 	}
 }
 
-func TestFile_PreservesOpaqueFrames(t *testing.T) {
+func TestSanitizeFile_PreservesOpaqueFrames(t *testing.T) {
 	for _, version := range []byte{3, 4} {
 		t.Run(string(rune('0'+version)), func(t *testing.T) {
 			// Given
@@ -117,7 +117,7 @@ func TestFile_PreservesOpaqueFrames(t *testing.T) {
 			trackPath := writeTrack(t, original)
 
 			// When
-			changed, err := File(trackPath)
+			changed, err := sanitizeFile(trackPath)
 
 			// Then
 			require.NoError(t, err)
@@ -131,7 +131,7 @@ func TestFile_PreservesOpaqueFrames(t *testing.T) {
 	}
 }
 
-func TestFile_RejectsMalformedTagsWithoutWriting(t *testing.T) {
+func TestSanitizeFile_RejectsMalformedTagsWithoutWriting(t *testing.T) {
 	tests := []struct {
 		name   string
 		mutate func([]byte) []byte
@@ -155,7 +155,7 @@ func TestFile_RejectsMalformedTagsWithoutWriting(t *testing.T) {
 			trackPath := writeTrack(t, original)
 
 			// When
-			changed, err := File(trackPath)
+			changed, err := sanitizeFile(trackPath)
 
 			// Then
 			require.Error(t, err)
@@ -167,13 +167,13 @@ func TestFile_RejectsMalformedTagsWithoutWriting(t *testing.T) {
 	}
 }
 
-func TestFile_MissingTitleIsUnchanged(t *testing.T) {
+func TestSanitizeFile_MissingTitleIsUnchanged(t *testing.T) {
 	for _, original := range [][]byte{[]byte("untagged audio"), makeTrack(3, makeFrame(3, "TPE1", encodeTitle("Artist", 0)))} {
 		// Given
 		trackPath := writeTrack(t, original)
 
 		// When
-		changed, err := File(trackPath)
+		changed, err := sanitizeFile(trackPath)
 
 		// Then
 		require.NoError(t, err)
@@ -184,7 +184,7 @@ func TestFile_MissingTitleIsUnchanged(t *testing.T) {
 	}
 }
 
-func TestFile_RejectsMissingFilesDirectoriesAndSymlinks(t *testing.T) {
+func TestSanitizeFile_RejectsMissingFilesDirectoriesAndSymlinks(t *testing.T) {
 	// Given
 	directory := t.TempDir()
 	target := writeTrack(t, []byte("audio"))
@@ -193,7 +193,7 @@ func TestFile_RejectsMissingFilesDirectoriesAndSymlinks(t *testing.T) {
 
 	// When
 	for _, trackPath := range []string{filepath.Join(directory, "missing.mp3"), directory, link} {
-		changed, err := File(trackPath)
+		changed, err := sanitizeFile(trackPath)
 
 		// Then
 		assert.Error(t, err)
@@ -282,7 +282,7 @@ func TestReplaceFile_CopyFailureLeavesOriginalAndRemovesTemporaryFile(t *testing
 	assert.Len(t, entries, 1)
 }
 
-func TestFile_RejectsDuplicateTitlesWithoutWriting(t *testing.T) {
+func TestSanitizeFile_RejectsDuplicateTitlesWithoutWriting(t *testing.T) {
 	// Given
 	frames := makeFrame(4, "TIT2", encodeTitle("First (Original Mix)", 3))
 	frames = append(frames, makeFrame(4, "TIT2", encodeTitle("Second (Original Mix)", 3))...)
@@ -290,7 +290,7 @@ func TestFile_RejectsDuplicateTitlesWithoutWriting(t *testing.T) {
 	trackPath := writeTrack(t, original)
 
 	// When
-	changed, err := File(trackPath)
+	changed, err := sanitizeFile(trackPath)
 
 	// Then
 	require.Error(t, err)
@@ -300,7 +300,7 @@ func TestFile_RejectsDuplicateTitlesWithoutWriting(t *testing.T) {
 	assert.Equal(t, original, unchanged)
 }
 
-func TestFile_PreservesBigEndianBOMAndUnterminatedTitles(t *testing.T) {
+func TestSanitizeFile_PreservesBigEndianBOMAndUnterminatedTitles(t *testing.T) {
 	for _, title := range [][]byte{
 		append([]byte{1, 0xfe, 0xff}, encodeTitle("夜 (Original Mix)", 2)[1:]...),
 		append([]byte{3}, []byte("Café (Original Mix)")...),
@@ -310,7 +310,7 @@ func TestFile_PreservesBigEndianBOMAndUnterminatedTitles(t *testing.T) {
 		trackPath := writeTrack(t, original)
 
 		// When
-		changed, err := File(trackPath)
+		changed, err := sanitizeFile(trackPath)
 
 		// Then
 		require.NoError(t, err)
@@ -328,14 +328,14 @@ func TestFile_PreservesBigEndianBOMAndUnterminatedTitles(t *testing.T) {
 	}
 }
 
-func TestFile_RejectsMalformedUTF16WithoutWriting(t *testing.T) {
+func TestSanitizeFile_RejectsMalformedUTF16WithoutWriting(t *testing.T) {
 	for _, title := range [][]byte{{1}, {1, 0, 0}, {2, 0}, {1, 0xff, 0xfe, 0}} {
 		// Given
 		original := makeTrack(4, makeFrame(4, "TIT2", title))
 		trackPath := writeTrack(t, original)
 
 		// When
-		changed, err := File(trackPath)
+		changed, err := sanitizeFile(trackPath)
 
 		// Then
 		require.Error(t, err)

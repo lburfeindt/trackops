@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestOpenShowsTitlesWithoutWritingOutput(t *testing.T) {
+func TestReadTitlesShowsTitlesWithoutWritingOutput(t *testing.T) {
 	// Given
 	playlistPath := filepath.Join(t.TempDir(), "Set.m3u8")
 	contents := "#EXTM3U\n#EXTINF:123,Artist One, Artist Two - Café Song, Club Mix\ntrack.mp3\n#EXTINF:99,Next - Title\nnext.mp3\n"
@@ -15,7 +15,7 @@ func TestOpenShowsTitlesWithoutWritingOutput(t *testing.T) {
 	}
 
 	// When
-	titles, err := Open(playlistPath)
+	titles, err := ReadTitles(playlistPath)
 
 	// Then
 	if err != nil {

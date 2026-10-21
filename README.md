@@ -37,7 +37,7 @@ Run direct Wails CLI commands from `cmd/trackops`.
 ## Code layout
 
 - `cmd/trackops` holds the Wails entry point and project configuration. `frontend/assets.go` embeds the static files. `internal/desktop` connects the window and native pickers to the headless features.
-- `internal/id3sanitizer` discovers MP3s and runs the batch; its `sanitizer` package edits one file.
+- `internal/id3sanitizer` discovers MP3s, runs the batch, and edits each file.
 - `internal/playlist` reads M3U titles and saves formatted output.
 - `frontend/dist` contains the source HTML, CSS, and JavaScript embedded in the app. `test/ui` contains the macOS UI checks.
 
