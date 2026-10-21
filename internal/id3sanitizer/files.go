@@ -4,7 +4,7 @@ package id3sanitizer
 import (
 	"context"
 
-	"github.com/lburfeindt/trackops/tools/id3-sanitizer/internal/batch"
+	"github.com/lburfeindt/trackops/internal/id3sanitizer/batch"
 )
 
 type Result = batch.Result

@@ -1,5 +1,4 @@
 /.idea/
 .DS_Store
-/tools/*/bin/
 /build/
 /frontend/wailsjs/

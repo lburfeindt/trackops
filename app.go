@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/lburfeindt/trackops/internal/id3sanitizer"
 	"github.com/lburfeindt/trackops/internal/playlist"
-	"github.com/lburfeindt/trackops/tools/id3-sanitizer/id3sanitizer"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 

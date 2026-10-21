@@ -3,12 +3,10 @@ module github.com/lburfeindt/trackops
 go 1.27.1
 
 require (
-	github.com/lburfeindt/trackops/tools/id3-sanitizer v0.0.0
+	github.com/bogem/id3v2/v2 v2.1.4
 	github.com/stretchr/testify v1.12.1
 	github.com/wailsapp/wails/v2 v2.17.0
 )
-
-replace github.com/lburfeindt/trackops/tools/id3-sanitizer => ./tools/id3-sanitizer
 
 require (
 	git.sr.ht/~jackmordaunt/go-toast/v2 v2.0.3 // indirect

@@ -1,27 +1,39 @@
-TOOLS := tools/format-playlist tools/id3-sanitizer
 WAILS ?= go run github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
-
-.PHONY: test verify format lint build clean test-ui
+.PHONY: test verify format lint prepare-build build package-macos clean test-ui
 
 format:
-	gofmt -w main.go app.go mp3_picker_*.go internal/playlist
-	@set -e; for tool in $(TOOLS); do $(MAKE) -C "$$tool" format; done
+	gofmt -w main.go app.go mp3_picker_*.go internal/id3sanitizer internal/playlist
 
 lint:
 	go vet ./...
-	@set -e; for tool in $(TOOLS); do $(MAKE) -C "$$tool" lint; done
 
 test:
 	go test ./...
-	@set -e; for tool in $(TOOLS); do $(MAKE) -C "$$tool" test; done
 
-verify: lint test
+verify:
+	@test -z "$$(gofmt -l main.go app.go mp3_picker_*.go internal/id3sanitizer internal/playlist)"
+	$(MAKE) lint
+	$(MAKE) test
 
-build:
+prepare-build:
+	mkdir -p build/darwin
+	cp packaging/macos/appicon.png build/appicon.png
+	cp packaging/macos/Info.plist build/darwin/Info.plist
+
+build: prepare-build
 	CGO_CFLAGS='-mmacosx-version-min=13.0' CGO_LDFLAGS='-framework UniformTypeIdentifiers -mmacosx-version-min=13.0' $(WAILS) build
-	@set -e; for tool in $(TOOLS); do $(MAKE) -C "$$tool" build; done
 
-test-ui: build
+package-macos: prepare-build
+	@test "$$(uname -s)" = Darwin || { echo 'package-macos requires macOS'; exit 1; }
+	CGO_CFLAGS='-mmacosx-version-min=13.0' CGO_LDFLAGS='-framework UniformTypeIdentifiers -mmacosx-version-min=13.0' $(WAILS) build -clean -platform darwin/arm64
+	codesign --force --deep --sign - build/bin/TrackOps.app
+	codesign --verify --deep --strict build/bin/TrackOps.app
+	@test "$$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' build/bin/TrackOps.app/Contents/Info.plist)" = com.lburfeindt.trackops
+	@test "$$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' build/bin/TrackOps.app/Contents/Info.plist)" = 0.1.0
+	@test "$$(/usr/libexec/PlistBuddy -c 'Print LSMinimumSystemVersion' build/bin/TrackOps.app/Contents/Info.plist)" = 13.0
+	@test "$$(lipo -archs build/bin/TrackOps.app/Contents/MacOS/TrackOps)" = arm64
+
+test-ui: package-macos
 	./test/ui/open-playlist.sh
 	./test/ui/playlist-states.sh
 	./test/ui/save-playlist.sh
@@ -29,5 +41,4 @@ test-ui: build
 	./test/ui/sanitize-folder.sh
 
 clean:
-	@set -e; for tool in $(TOOLS); do $(MAKE) -C "$$tool" $@; done
-	rm -rf build/bin
+	rm -rf build

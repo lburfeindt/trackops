@@ -7,11 +7,10 @@ test_directory=$(mktemp -d)
 trap 'rm -rf "$test_directory"' EXIT
 selection_directory="$test_directory/selection"
 mkdir "$selection_directory"
-fixture="$project_root/tools/id3-sanitizer/testdata/Silence.mp3"
+fixture="$project_root/internal/id3sanitizer/testdata/Silence.mp3"
 cp "$fixture" "$selection_directory/updated.mp3"
 cp "$fixture" "$selection_directory/unchanged.mp3"
-cp "$fixture" "$test_directory/expected.mp3"
-"$project_root/tools/id3-sanitizer/bin/id3-sanitizer" "$test_directory/expected.mp3" >/dev/null
+cp "$project_root/internal/id3sanitizer/testdata/Silence-sanitized.mp3" "$test_directory/expected.mp3"
 cp "$test_directory/expected.mp3" "$selection_directory/unchanged.mp3"
 printf 'ID3' > "$selection_directory/broken.mp3"
 

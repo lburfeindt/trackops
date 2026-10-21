@@ -15,7 +15,7 @@ import (
 
 func TestFile_SanitizesFixtureAndPreservesAudioAndMetadata(t *testing.T) {
 	// Given
-	original, err := os.ReadFile("../../testdata/Silence.mp3")
+	original, err := os.ReadFile("../testdata/Silence.mp3")
 	require.NoError(t, err)
 	trackPath := writeTrack(t, original)
 	require.NoError(t, os.Chmod(trackPath, 0o640))

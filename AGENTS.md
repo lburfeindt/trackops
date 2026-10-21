@@ -4,8 +4,8 @@
 
 - Create a Git branch for each task
 - Keep changes focused and follow the conventions and lifecycle documented by the affected tool.
-- This repository contains independent tools. Check the tool's README before changing it; avoid assuming one language or workflow applies to every tool.
-- From the repository root, `make format`, `make lint`, `make test`, `make verify`, and `make build` run the registered tools' corresponding targets. Tool-specific instructions may define additional requirements.
+- TrackOps is one Wails app with headless ID3 and playlist features in the root Go module. Check the root README before changing it.
+- From the repository root, `make format`, `make lint`, `make test`, `make verify`, and `make build` cover the app module. `make package-macos` builds the local release; `make test-ui` runs its macOS UI suite.
 - Keep commit messages and pull request descriptions short (one to three lines).
 - Use [docs/README.md](docs/README.md) to find lasting documentation.
 

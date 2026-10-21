@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/lburfeindt/trackops/tools/id3-sanitizer/internal/sanitizer"
+	"github.com/lburfeindt/trackops/internal/id3sanitizer/sanitizer"
 )
 
 // Failure identifies an input that could not be read or sanitized.
