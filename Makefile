@@ -2,7 +2,7 @@ WAILS ?= go run github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
 .PHONY: test verify format lint prepare-build build package-macos clean test-ui
 
 format:
-	gofmt -w main.go internal/desktop internal/id3sanitizer internal/playlist
+	gofmt -w cmd/trackops frontend/assets.go internal/desktop internal/id3sanitizer internal/playlist
 
 lint:
 	go vet ./...
@@ -11,7 +11,7 @@ test:
 	go test ./...
 
 verify:
-	@test -z "$$(gofmt -l main.go internal/desktop internal/id3sanitizer internal/playlist)"
+	@test -z "$$(gofmt -l cmd/trackops frontend/assets.go internal/desktop internal/id3sanitizer internal/playlist)"
 	$(MAKE) lint
 	$(MAKE) test
 
@@ -21,11 +21,11 @@ prepare-build:
 	cp packaging/macos/Info.plist build/darwin/Info.plist
 
 build: prepare-build
-	CGO_CFLAGS='-mmacosx-version-min=13.0' CGO_LDFLAGS='-framework UniformTypeIdentifiers -mmacosx-version-min=13.0' $(WAILS) build
+	cd cmd/trackops && CGO_CFLAGS='-mmacosx-version-min=13.0' CGO_LDFLAGS='-framework UniformTypeIdentifiers -mmacosx-version-min=13.0' $(WAILS) build
 
 package-macos: prepare-build
 	@test "$$(uname -s)" = Darwin || { echo 'package-macos requires macOS'; exit 1; }
-	CGO_CFLAGS='-mmacosx-version-min=13.0' CGO_LDFLAGS='-framework UniformTypeIdentifiers -mmacosx-version-min=13.0' $(WAILS) build -clean -platform darwin/arm64
+	cd cmd/trackops && CGO_CFLAGS='-mmacosx-version-min=13.0' CGO_LDFLAGS='-framework UniformTypeIdentifiers -mmacosx-version-min=13.0' $(WAILS) build -clean -platform darwin/arm64
 	codesign --force --deep --sign - build/bin/TrackOps.app
 	codesign --verify --deep --strict build/bin/TrackOps.app
 	@test "$$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' build/bin/TrackOps.app/Contents/Info.plist)" = com.lburfeindt.trackops
