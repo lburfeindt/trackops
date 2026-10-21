@@ -1,5 +1,4 @@
-// Package sanitizer removes the Original Mix suffix from ID3v2 track titles.
-package sanitizer
+package id3sanitizer
 
 import (
 	"bytes"
@@ -10,9 +9,9 @@ import (
 	"path/filepath"
 )
 
-// File sanitizes an ID3v2.3 or ID3v2.4 title and replaces the file at path.
+// sanitizeFile sanitizes an ID3v2.3 or ID3v2.4 title and replaces the file at path.
 // It returns whether the file changed. Nonmatching titles cause no write.
-func File(path string) (bool, error) {
+func sanitizeFile(path string) (bool, error) {
 	info, err := os.Lstat(path)
 	if err != nil {
 		return false, fmt.Errorf("open mp3: %w", err)

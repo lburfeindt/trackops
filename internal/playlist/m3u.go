@@ -6,10 +6,10 @@ import (
 	"strings"
 )
 
-// Titles returns the titles from M3U extended-information entries.
-func Titles(r io.Reader) ([]string, error) {
+// ParseTitles returns the titles from M3U extended-information entries.
+func ParseTitles(reader io.Reader) ([]string, error) {
 	var titles []string
-	scanner := bufio.NewScanner(r)
+	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		line := strings.TrimSuffix(scanner.Text(), "\r")
 		if !strings.HasPrefix(line, "#EXTINF:") {
