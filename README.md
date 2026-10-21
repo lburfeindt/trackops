@@ -32,4 +32,11 @@ make build
 
 `make build` makes a development app. `make test-ui` packages the app and runs the macOS UI suite, including native pickers and file assertions. Give the terminal running it Accessibility access. `make clean` removes generated files in `build/`.
 
+## Code layout
+
+- `app.go` connects the Wails window to the two headless features. The platform pickers live in `mp3_picker_*`.
+- `internal/id3sanitizer` discovers MP3s and runs the batch; its `sanitizer` package edits one file.
+- `internal/playlist` reads M3U titles and saves formatted output.
+- `frontend/dist` contains the source HTML, CSS, and JavaScript embedded in the app. `test/ui` contains the macOS UI checks.
+
 See [documentation](docs/README.md) for project guidance and decisions.

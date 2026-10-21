@@ -1,5 +1,5 @@
-// Package batch sanitizes selected MP3 files and directory trees.
-package batch
+// Package id3sanitizer sanitizes selected MP3 files and directory trees.
+package id3sanitizer
 
 import (
 	"context"
