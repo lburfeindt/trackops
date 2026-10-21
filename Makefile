@@ -2,7 +2,7 @@ WAILS ?= go run github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
 .PHONY: test verify format lint prepare-build build package-macos clean test-ui
 
 format:
-	gofmt -w main.go app.go mp3_picker_*.go internal/id3sanitizer internal/playlist
+	gofmt -w main.go internal/desktop internal/id3sanitizer internal/playlist
 
 lint:
 	go vet ./...
@@ -11,7 +11,7 @@ test:
 	go test ./...
 
 verify:
-	@test -z "$$(gofmt -l main.go app.go mp3_picker_*.go internal/id3sanitizer internal/playlist)"
+	@test -z "$$(gofmt -l main.go internal/desktop internal/id3sanitizer internal/playlist)"
 	$(MAKE) lint
 	$(MAKE) test
 

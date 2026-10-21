@@ -34,7 +34,7 @@ make build
 
 ## Code layout
 
-- `app.go` connects the Wails window to the two headless features. The platform pickers live in `mp3_picker_*`.
+- `main.go` starts Wails and embeds the frontend. `internal/desktop` connects the window and native pickers to the headless features.
 - `internal/id3sanitizer` discovers MP3s and runs the batch; its `sanitizer` package edits one file.
 - `internal/playlist` reads M3U titles and saves formatted output.
 - `frontend/dist` contains the source HTML, CSS, and JavaScript embedded in the app. `test/ui` contains the macOS UI checks.

@@ -1,4 +1,4 @@
-package main
+package desktop
 
 import (
 	"context"
@@ -46,7 +46,8 @@ type SanitizeResult struct {
 	Stopped   bool              `json:"stopped"`
 }
 
-func (app *App) startup(context context.Context) {
+// Startup stores the Wails context for dialogs, clipboard access, and events.
+func Startup(app *App, context context.Context) {
 	app.context = context
 }
 
